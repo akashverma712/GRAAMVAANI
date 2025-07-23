@@ -10,12 +10,12 @@ import VerifyEmail from './pages/VerifyEmail';
 function App() {
   return (
     <Routes>
-      {/* Public */}
+     
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
       <Route path="/verify-email-address" element={<VerifyEmail />} />
 
-      {/* Protected Route */}
+      
       <Route
         path="/dashboard"
         element={
@@ -30,7 +30,7 @@ function App() {
         }
       />
 
-      {/* Default Redirect */}
+    
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
