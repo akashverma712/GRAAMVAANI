@@ -18,49 +18,61 @@ import Footer from './components/Footer';
 import Notices from './components/Notices';
 
 function HomePage() {
-  return (
-    <>
-      <Navbar />
-      <Hero />
-      <Features />
-      <Notices />
-      <AboutSection />
-      <CATsection />
-      <Footer />
-    </>
-  );
+
+	return (
+		<>
+			<Navbar />
+			<Hero />
+			<Features />
+			<Notices />
+			<AboutSection />
+			<CATsection />
+			<Footer />
+		</>
+	);
 }
 
 function App() {
-  return (
-    <Routes>
-     
-      <Route path="/" element={<HomePage />} />
+	return (
+		<Routes>
+			<Route
+				path="/"
+				element={<HomePage />}
+			/>
 
-      
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/verify-email-address" element={<VerifyEmail />} />
+			<Route
+				path="/signup"
+				element={<Signup />}
+			/>
+			<Route
+				path="/login"
+				element={<Login />}
+			/>
+			<Route
+				path="/verify-email-address"
+				element={<VerifyEmail />}
+			/>
 
-     
-      <Route
-        path="/dashboard"
-        element={
-          <>
-            <SignedIn>
-              <Dashboard />
-            </SignedIn>
-            <SignedOut>
-              <RedirectToSignIn />
-            </SignedOut>
-          </>
-        }
-      />
+			<Route
+				path="/dashboard"
+				element={
+					<>
+						<SignedIn>
+							<Dashboard />
+						</SignedIn>
+						<SignedOut>
+							<RedirectToSignIn />
+						</SignedOut>
+					</>
+				}
+			/>
 
-    
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
-  );
+			<Route
+				path="*"
+				element={<Navigate to="/" />}
+			/>
+		</Routes>
+	);
 }
 
 export default App;
