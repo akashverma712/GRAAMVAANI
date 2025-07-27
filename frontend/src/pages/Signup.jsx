@@ -8,9 +8,9 @@ const Signup = () => {
         <p className="text-center mb-6 text-gray-600 dark:text-gray-300">
           Sign up to access the dashboard
         </p>
-        <SignUp 
-          redirectUrl="/dashboard" 
-          afterSignUpUrl="/dashboard" 
+        <SignUp
+          redirectUrl="/dashboard"
+          afterSignUpUrl="/dashboard"
           afterSignInUrl="/dashboard"
         />
       </div>
