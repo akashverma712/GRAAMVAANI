@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { FaMobileAlt, FaBroadcastTower, FaGlobe, FaComments, FaShieldAlt } from 'react-icons/fa';
 
 const Features = () => {
+	const { t } = useTranslation();
+
 	return (
 		<section
 			id="features"
@@ -12,43 +15,44 @@ const Features = () => {
 				whileInView={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.6 }}
 				className="text-3xl font-bold text-center text-green-800 mb-12">
-				Key Features
+				{t('features.title')}
 			</motion.h3>
+
 			<div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 px-4">
 				<FeatureCard
 					icon={<FaBroadcastTower />}
-					title="Offline Notices"
-					desc="Access notices even without internet."
+					title={t('features.offlineTitle')}
+					desc={t('features.offlineDesc')}
 					delay={0.1}
 				/>
 				<FeatureCard
 					icon={<FaGlobe />}
-					title="Multilingual"
-					desc="Supports Hindi, Tamil, Telugu & more."
+					title={t('features.multilangTitle')}
+					desc={t('features.multilangDesc')}
 					delay={0.2}
 				/>
 				<FeatureCard
 					icon={<FaMobileAlt />}
-					title="Mobile + SMS"
-					desc="App for smartphones, SMS for feature phones."
+					title={t('features.mobileTitle')}
+					desc={t('features.mobileDesc')}
 					delay={0.3}
 				/>
 				<FeatureCard
 					icon={<FaComments />}
-					title="Voice Broadcast"
-					desc="Panchayats can send audio messages."
+					title={t('features.voiceTitle')}
+					desc={t('features.voiceDesc')}
 					delay={0.4}
 				/>
 				<FeatureCard
 					icon={<FaShieldAlt />}
-					title="Secure Access"
-					desc="Only authorized admins can publish."
+					title={t('features.secureTitle')}
+					desc={t('features.secureDesc')}
 					delay={0.5}
 				/>
 				<FeatureCard
 					icon={<FaMobileAlt />}
-					title="Simple UI"
-					desc="Easy for all ages and literacy levels."
+					title={t('features.uiTitle')}
+					desc={t('features.uiDesc')}
 					delay={0.6}
 				/>
 			</div>
@@ -56,7 +60,6 @@ const Features = () => {
 	);
 };
 
-export default Features;
 const FeatureCard = ({ icon, title, desc, delay }) => (
 	<motion.div
 		initial={{ opacity: 0, y: 40 }}
@@ -69,3 +72,5 @@ const FeatureCard = ({ icon, title, desc, delay }) => (
 		<p className="text-sm text-gray-600 mt-2">{desc}</p>
 	</motion.div>
 );
+
+export default Features;

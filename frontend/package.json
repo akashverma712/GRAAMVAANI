@@ -10,10 +10,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.35.3",
+    "@clerk/clerk-react": "^5.36.0",
     "@tailwindcss/vite": "^4.1.11",
     "axios": "^1.10.0",
     "browser-image-compression": "^2.0.2",
+    "date-fns": "^4.1.0",
     "formik": "^2.4.6",
     "framer-motion": "^12.23.7",
     "react": "^19.1.0",
