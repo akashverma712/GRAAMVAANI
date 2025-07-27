@@ -47,3 +47,12 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+{/* <div className="inline-block">
+	<SignedOut>
+		<SignInButton />
+	</SignedOut>
+	<SignedIn>
+		<UserButton />
+	</SignedIn>
+</div>; */}
