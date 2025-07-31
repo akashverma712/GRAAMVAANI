@@ -7,7 +7,7 @@ const LanguageSwitcher = () => {
   const [open, setOpen] = useState(false);
 
   const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
+    i18n.changeLanguage(lng); 
     setOpen(false);
   };
 

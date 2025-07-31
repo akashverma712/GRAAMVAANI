@@ -38,9 +38,9 @@
   "learnMore": "Learn More"
 },
 "navbar": {
-    "features": "Features",
-    "about": "About",
-    "contact": "Contact",
+    "features": "Notice",
+    "about": "Forum",
+    "contact": "Calander",
     "signup": "Sign Up"
   },
   "footer": {
@@ -50,7 +50,24 @@
 		"phone": "Phone",
 		"address": "Address",
 		"addressValue": "Rural Tech HQ, India"
-	}
+	},
+  "stories": {
+    "title": "Success Story Wall",
+    "by": "by",
+    "from": "from"
+  },
+  "story1": {
+    "title": "Organic Farming Success",
+    "description": "Ravi transformed his 2-acre land into a profitable organic farm, increasing income by 60%."
+  },
+  "story2": {
+    "title": "Women Self Help Group",
+    "description": "Led a group of 20 women to start a handicraft business, creating jobs and economic independence."
+  },
+  "story3": {
+    "title": "Digital Literacy Advocate",
+    "description": "Started a free computer class for kids and adults in the village using old laptops."
+  }
 
 }
   
