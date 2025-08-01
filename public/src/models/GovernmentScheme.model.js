@@ -18,6 +18,7 @@ eligibility: {
   },
 applicationProcess: {
     type: String,
+    trim: true
   },
 deadlines: {
     type: Date,
@@ -25,6 +26,14 @@ deadlines: {
 category: {
     type: String,
     enum: ['health', 'agriculture', 'general', 'schemes']
+  },
+media: [{
+    type: String,
+    trim: true,
+  }],
+audioUrl: {
+    type: String,
+    trim: true,
   },
 },{timestamps: true})
 

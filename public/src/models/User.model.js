@@ -27,10 +27,14 @@ phone: {
         required: true,
         match: [/^[0-9]{10}$/, 'Invalid phone number']
     },
- subscriptions: [{
+subscriptions: [{
     type: String,
     enum: ['health', 'agriculture', 'events', 'schemes'],
   }],
+  profilePicture: {
+     type: String,
+     trim: true 
+    },
 
 }, { timestamps: true })
 

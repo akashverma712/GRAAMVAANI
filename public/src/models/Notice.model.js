@@ -22,6 +22,10 @@ category: {
     required: [true, 'Category is required'],
     enum: ['health', 'agriculture', 'general', 'schemes']
   },
+audioUrl: {
+    type: String,
+    trim: true,
+  },  
 createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
