@@ -8,7 +8,7 @@ const VerifyEmail = () => {
 
   useEffect(() => {
     if (user && user.emailAddresses[0]?.verification?.status === 'verified') {
-      navigate('/dashboard');
+      navigate('/');
     }
   }, [user]);
 
