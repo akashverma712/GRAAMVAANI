@@ -26,16 +26,16 @@ category: {
   },
 isAnonymous: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   likes: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   }],
   comments: [
-    { 
+    {
       type: mongoose.Schema.Types.ObjectId,
-     ref: 'Comment' 
+     ref: 'Comment'
     }
     ] ,
 },{timestamps: true})
