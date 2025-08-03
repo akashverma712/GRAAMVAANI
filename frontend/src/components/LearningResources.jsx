@@ -45,11 +45,11 @@ const LearningResources = () => {
 			initial={{ opacity: 0, y: 30 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.6 }}
-			className="max-w-6xl mx-auto px-4 py-12">
-			<h2 className="text-3xl font-bold text-green-700 mb-8 flex items-center gap-2">📚 Resources</h2>
+			className="max-w-6xl mx-auto px-4 py-6 mt-6 bg-white shadow-lg rounded-xl overflow-hidden border border-green-100 transition-al">
+			<h2 className="text-3xl font-bold text-green-700 mb-8 flex items-center gap-2 ">📚 Resources</h2>
 
 			{categorizedResources.video.length > 0 && (
-				<div className="mb-10">
+				<div className="mb-10 ">
 					<h3 className="text-2xl font-semibold text-green-800 mb-4 flex items-center gap-2">
 						<FaVideo /> Videos
 					</h3>

@@ -22,15 +22,8 @@ const Footer = () => {
 						{t('footer.address')} : {t('footer.addressValue')}
 					</p>
 
-					{/* 👇 Admin Sign In link */}
-					<p className="mt-3">
-						<Link
-							to="/admin-login"
-							className="text-gray-400 hover:text-white underline text-xs"
-						>
-							🔐 {t('footer.adminLogin', 'Admin Sign In')}
-						</Link>
-					</p>
+					
+
 				</div>
 			</div>
 		</footer>

@@ -7,7 +7,7 @@ import Dashboard from './pages/Dashboard';
 import VerifyEmail from './pages/VerifyEmail';
 import ProtectedRoute from './routes/ProtectedRoute';
 import NoticeDetail from './components/NoticeDetail';
-import Scheme from './components/Scheme';
+// import Scheme from './components/Scheme';
 import EventCalendar from './components/EventCalendar';
 import CommunityForum from './components/CommunityForum';
 import AdditionalInfo from './components/AdditionalInfo';

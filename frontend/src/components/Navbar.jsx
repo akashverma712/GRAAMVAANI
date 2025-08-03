@@ -30,12 +30,12 @@ const Navbar = () => {
               {t("navbar.contact")}
             </Link>
             <Link to='/additional-info' className="hover:underline">
-              {t("navbar.moreInfo") || "More Info"}
+              {t("user") || "More Info"}
             </Link>
           </nav>
 
           <LanguageSwitcher />
-          
+
           <div className="inline-block">
             <SignedOut>
               <SignInButton />
