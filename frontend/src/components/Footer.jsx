@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
 	const { t } = useTranslation();
@@ -13,12 +14,16 @@ const Footer = () => {
 					<h4 className="text-lg font-bold">{t('footer.title')}</h4>
 					<p className="text-gray-400 mt-2">{t('footer.tagline')}</p>
 				</div>
+
 				<div className="space-y-1 mt-6 md:mt-0">
 					<p>{t('footer.email')} : support@graamvaani.in</p>
 					<p>{t('footer.phone')} : +91 98765 43210</p>
 					<p>
 						{t('footer.address')} : {t('footer.addressValue')}
 					</p>
+
+					
+
 				</div>
 			</div>
 		</footer>

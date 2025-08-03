@@ -18,14 +18,14 @@ router.route("/").post( protect, official,[
   body('title').notEmpty().withMessage('Title is required').trim().escape(),
   body('content').notEmpty().withMessage('Content is required').trim().escape(),
   body('category').notEmpty().withMessage('Category is required').isIn(['health', 'agriculture', 'general', 'schemes', 'forum']).withMessage('Invalid category'),
-  body('audioUrl').optional().isURL().withMessage('Invalid audio URL'),  
+  body('audioUrl').optional().isURL().withMessage('Invalid audio URL'),
 ],validate, createNotice)
 router.route("/:noticeid").put(protect,official,[
  param('noticeId').isMongoId().withMessage('Invalid notice ID'),
   body('title').optional().notEmpty().withMessage('Title cannot be empty').trim().escape(),
   body('content').optional().notEmpty().withMessage('Content cannot be empty').trim().escape(),
   body('category').optional().isIn(['health', 'agriculture', 'general', 'schemes', 'forum']).withMessage('Invalid category'),
-  body('audioUrl').optional().isURL().withMessage('Invalid audio URL'),   
+  body('audioUrl').optional().isURL().withMessage('Invalid audio URL'),
 ],validate,updateNotice)
 router.route("/:noticeid").delete(protect,official,[
  param('noticeId').isMongoId().withMessage('Invalid notice ID'),
