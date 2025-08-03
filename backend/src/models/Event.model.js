@@ -3,7 +3,7 @@ import mongoose, {Schema} from "mongoose";
 
 
 const eventSchema = new Schema({
-    title: {
+  title: {
     type: String,
     required: [true, 'Title is required'],
     trim: true
@@ -19,6 +19,10 @@ const eventSchema = new Schema({
     type: String,
     trim: true,
   }],
+  audioUrl: {
+    type: String,
+    trim: true,
+  },
   location: {
     type: String,
     required: [true, 'Location is required'],

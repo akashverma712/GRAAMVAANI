@@ -11,6 +11,10 @@ content: {
     type: String,
     required: [true, 'Content is required'],
   },
+media: [{
+    type: String,
+    trim: true,
+  }],
 author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -24,8 +28,18 @@ isAnonymous: {
     type: Boolean,
     default: false,
   },
+  likes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  }],
+  comments: [
+    { 
+      type: mongoose.Schema.Types.ObjectId,
+     ref: 'Comment' 
+    }
+    ] ,
 },{timestamps: true})
 
-
+forumpostSchema.index({ title: 'text', content: 'text'})
 
 export const ForumPost = mongoose.model('ForumPost', forumpostSchema)

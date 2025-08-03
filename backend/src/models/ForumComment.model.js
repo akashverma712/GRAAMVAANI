@@ -18,6 +18,16 @@ const forumcommentSchema = new Schema({
     ref: 'ForumPost',
     required: true,
   },
+  parentComment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ForumComment',
+  },
+  likes: [
+    {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  }
+],
   isAnonymous: {
     type: Boolean,
     default: false,
@@ -25,6 +35,6 @@ const forumcommentSchema = new Schema({
 
 },{timestamps: true})
 
-
+forumcommentSchema.index({ content: 'text' });
 
 export const ForumComment = mongoose.model('ForumComment', forumcommentSchema)
