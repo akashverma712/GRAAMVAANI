@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors"
 import cookieParser from "cookie-parser";
 import helmet from "helmet"
-
+import rateLimit from "express-rate-limit"
 
 
 
@@ -28,7 +28,7 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // routes
 
-import authRoutes from './routes/authRoutes.js';
+// import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/event.routes.js';
 import forumRoutes from './routes/forum.routes.js';
 import noticeRoutes from './routes/notice.routes.js'
@@ -38,7 +38,7 @@ import schemeRoutes from './routes/schemes.routes.js'
 //DECLARATION
 
 
-app.use('/api/auth', authRoutes);
+// app.use('/api/auth', authRoutes);
 app.use('/api/events',eventRoutes)
 app.use('/api/forum',forumRoutes)
 app.use('/api/notice',noticeRoutes)

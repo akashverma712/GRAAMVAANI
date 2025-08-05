@@ -1,5 +1,5 @@
 
-import { jwt } from "jsonwebtoken";
+import jwt  from "jsonwebtoken";
 
 import { asyncHandler } from "../utils/Asynchandler.js";
 
@@ -17,7 +17,7 @@ const protect = asyncHandler((req, res, next) =>{
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      req.user =  User.findById(decoded.id).select('-password');
+      req.user =  User.findById(decoded.id).select('-password'); 
       if (!req.user) {
         throw new ApiError("User not found")
       }
@@ -63,7 +63,8 @@ export {
 // linkedin system for forum part
 // sms and mail system for those who don't have smartphones
 // new page for more personal information
-// admin route for officials
+// admin route for officials 
 // neeraj admin dashboard ka frontend, and linkedin part
 // admin portion ka backend
-// admin route, sms integration and ai chatbot jo hai usko train
+// admin route, sms integration and ai chatbot jo hai usko train 
+ 

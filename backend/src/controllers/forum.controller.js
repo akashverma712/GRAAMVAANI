@@ -247,7 +247,7 @@ const removeLikeFrompost = asyncHandler(async(req, res)=>{
 
 
 
-const addLikeToComment = asyncHandler(async(res, res)=>{
+const addLikeToComment = asyncHandler(async(req, res)=>{
 
     const { commentId } = req.params
     try {
