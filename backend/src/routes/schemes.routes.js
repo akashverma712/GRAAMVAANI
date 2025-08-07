@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { getScheme, createScheme,deleteScheme,updateScheme,getSchemeById } from "../controllers/governmentscheme.controller.js";
-import { protect, official } from "../middlewares/auth.middleware.js";
+import { official } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { param, body } from "express-validator";
 
@@ -15,7 +15,7 @@ router.route("/:schemeid").get([
     param('schemeId').isMongoId().withMessage('Invalid scheme ID'),
 ],validate,getSchemeById)
 
-router.route('/').post(protect,official,[
+router.route('/').post(official,[
   body('name').notEmpty().withMessage('Name is required').trim().escape(),
   body('category').notEmpty().withMessage('Category is required').isIn(['health', 'agriculture', 'general', 'schemes']).withMessage('Invalid category'),
   body('audioUrl').optional().isURL().withMessage('Invalid audio URL'),
@@ -27,7 +27,7 @@ router.route('/').post(protect,official,[
   body('deadlines').optional().isISO8601().withMessage('Invalid date format'),   
 ],validate,createScheme)
 
-router.route("/:schemeid").put(protect,official,[
+router.route("/:schemeid").put(official,[
   param('schemeId').isMongoId().withMessage('Invalid scheme ID'),
   body('name').optional().notEmpty().withMessage('Name cannot be empty').trim().escape(),
   body('category').optional().isIn(['health', 'agriculture', 'general', 'schemes']).withMessage('Invalid category'),
@@ -40,7 +40,7 @@ router.route("/:schemeid").put(protect,official,[
   body('deadlines').optional().isISO8601().withMessage('Invalid date format'),  
 ],validate,updateScheme)
 
-router.route("/:schemeid").delete(protect,official,[
+router.route("/:schemeid").delete(official,[
   param('schemeId').isMongoId().withMessage('Invalid scheme ID'),
      
 ],validate,deleteScheme)
