@@ -23,6 +23,10 @@ const protect = asyncHandler(async (req, res, next) => {
 
       const decoded = await clerk.verifyToken(token);
 
+      if (!decoded) {
+        throw new ApiError(401,'Token is not defined')
+      }
+
       const userId = decoded.sub;
 
       req.user = await User.findById(userId).select('-password ');
@@ -44,29 +48,29 @@ const protect = asyncHandler(async (req, res, next) => {
 
 
 
-const admin = (req, res, next) => {
-  if (req.user && req.user?.role === 'admin') {
+const Centraladmin = (req, res, next) => {
+  if (req.user && req.user?.role === 'central_admin') {
     next();
   } else {
-    res.status(401).json({ message: 'Not authorized as admin' });
+    res.status(401).json({ message: 'Not authorized as Central_admin' });
   }
 };
 
 
-const official = (req, res, next) => {
-  if (req.user && (req.user?.role === 'admin' || req.user?.role === 'official')) {
+const Localadmin = (req, res, next) => {
+  if (req.user.role ==='local_admin' || req.user.verified) {
     next();
   } else {
-    res.status(403).json({ message: 'Not authorized' });
+    res.status(403).json({ message: 'Not authorized as Local_admin' });
   }
-};
+}
 
 
 
 export {
   protect,
-    admin,
-    official
+    Centraladmin,
+    Localadmin
 }
 
 

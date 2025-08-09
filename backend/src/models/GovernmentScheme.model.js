@@ -16,13 +16,24 @@ eligibility: {
     type: String,
     trim : true
   },
+  targetType:{
+    type: String, 
+    enum: ['all', 'state' , 'district'],
+    required: true
+  },
+  target:{
+    type: String
+  },
 applicationProcess: {
     type: String,
     trim: true
   },
-deadlines: {
-    type: Date,
+  startDate:{
+  type: Date
   },
+  endDate: {
+    type: Date,
+ },
 category: {
     type: String,
     enum: ['health', 'agriculture', 'general', 'schemes']
@@ -39,4 +50,4 @@ audioUrl: {
 
 
 
-export const GovernmentSchema = mongoose.model('GovernmentSchema', governmentSchema)
+export const GovernmentScheme = mongoose.model('GovernmentScheme', governmentSchema)

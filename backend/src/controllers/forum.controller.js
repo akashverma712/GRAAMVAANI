@@ -4,7 +4,8 @@ import { asyncHandler } from "../utils/Asynchandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/User.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import Api from "twilio/lib/rest/Api.js";
+
+import { param, query, body, validationResult } from "express-validator";
 
 
 
@@ -13,8 +14,15 @@ import Api from "twilio/lib/rest/Api.js";
 
 
 
+const getPosts =[
+query('page').optional().isInt({ min: 1}),
+query('limit').optional().isInt({ min: 1, max: 50 }),
+query('search').optional().trim().escape(),
 
-const getPosts = asyncHandler(async(req,res)=>{
+    asyncHandler(async(req,res)=>{
+
+        const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
   
     try {
        const {page = 1, limit=10, category, search } = req.query
@@ -58,10 +66,20 @@ const getPosts = asyncHandler(async(req,res)=>{
 
    }
 })
+]
 
 
+const createPost =[
+     body('title').notEmpty().withMessage('title is required').trim().escape(),
+     body('content').notEmpty().withMessage('Content is required').trim().escape(),
+     body('category').optional().isIn(['health', 'agriculture', 'general','schemes']),
+     body('isAnonyous').optional().isBoolean(),
 
-const createPost = asyncHandler(async(req, res)=>{
+
+    asyncHandler(async(req, res)=>{
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const {title, content, category, isAnonymous} = req.body
 try {
@@ -96,10 +114,16 @@ try {
     throw new ApiError(500, "Due to server error post not created")
 }
 })
+]
 
 
+const getComment =[
 
-const getComment = asyncHandler(async(req, res)=>{
+     param('postId').isMongoId().withMessage('Invalid Post id'),
+
+asyncHandler(async(req, res)=>{
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     try {
         const {postId} = req.params
@@ -123,10 +147,17 @@ const getComment = asyncHandler(async(req, res)=>{
         
     }
 })
+]
 
 
+const createComment = [
+     param('postId').isMongoId().withMessage('Invalid post Id'),
+     body('content').notEmpty().withMessage('Content is Required').trim().escape(),
+     body('parentComment').optional().isMongoId().withMessage('Invalid parent comment ID'),
 
-const createComment = asyncHandler(async(req, res)=>{
+asyncHandler(async(req, res)=>{
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
 const { postId } = req.params;
 const { content, parentComment, isAnonymous }= req.body
@@ -180,9 +211,16 @@ try {
 }
 
 })
+]
 
 
-const addLikeToPost = asyncHandler(async(req, res)=>{
+const addLikeToPost =[
+   
+      param('postId').isMongoId().withMessage('Invalid post ID'),
+
+ asyncHandler(async(req, res)=>{
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const { postId } = req.params
     try {
@@ -211,8 +249,18 @@ const addLikeToPost = asyncHandler(async(req, res)=>{
     throw new ApiError(500,error?.message || "server error Failed to like the post")
     }
 })
+]
 
-const removeLikeFrompost = asyncHandler(async(req, res)=>{
+
+const removeLikeFrompost =[
+  
+     param('postId').isMongoId().withMessage('Invalid post ID'),
+
+ asyncHandler(async(req, res)=>{
+
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
     const { postId } = req.params
     try {
         
@@ -244,10 +292,16 @@ const removeLikeFrompost = asyncHandler(async(req, res)=>{
         throw new ApiError(500, error?.message || "Server error to dislike the post")
     }
 }) 
+]
 
 
+const addLikeToComment =[
+  
+      param('commentId').isMongoId().withMessage('Invalid comment ID'),
 
-const addLikeToComment = asyncHandler(async(req, res)=>{
+ asyncHandler(async(req, res)=>{
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const { commentId } = req.params
     try {
@@ -278,10 +332,17 @@ const addLikeToComment = asyncHandler(async(req, res)=>{
 
     }
 })
+]
 
 
+const removeLikeToComment =[
 
-const removeLikeToComment = asyncHandler(async(req, res)=>{
+      param('commentId').isMongoId().withMessage('Invalid comment ID'),
+  
+ asyncHandler(async(req, res)=>{
+
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const { commentId } = req.params
 
@@ -316,9 +377,19 @@ const removeLikeToComment = asyncHandler(async(req, res)=>{
         
     }
 })
+]
 
 
-const deletePost = asyncHandler(async(req, res)=>{
+
+const deletePost =[
+
+      param('postId').isMongoId().withMessage('Invalid post id'),
+
+ asyncHandler(async(req, res)=>{
+
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
     const { postId } = req.params
     try {
         
@@ -352,9 +423,17 @@ const deletePost = asyncHandler(async(req, res)=>{
         
     }
 })
+]
 
 
-const deleteComment = asyncHandler(async(req, res)=>{
+const deleteComment =[
+
+      param('commentId').isMongoId().withMessage('Invalid comment ID'),
+
+ asyncHandler(async(req, res)=>{
+
+     const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
     const { commentId } = req.params
 
@@ -390,7 +469,7 @@ const deleteComment = asyncHandler(async(req, res)=>{
       throw new ApiError(500, error?.message || "comment not deleted due to server error")  
     }
 })
-
+]
 
 
 

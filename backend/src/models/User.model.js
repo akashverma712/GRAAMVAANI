@@ -19,13 +19,30 @@ password: {
     },
 role: {
         type: String,
-        enum: ['admin', 'official', 'villager'],
-        default: 'villager',
+        enum: ['central_admin', 'local_admin', 'user'],
+        default: 'user',
+        required: true
     },
+panchayat:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Panchayat',
+    default: null
+},
+verified:{
+  type: Boolean,
+  default: false
+},
+identification:{
+  type:{
+    type: String,
+    enum: ['Aadhaar','Voter ID']
+  },
+  number: String,
+},
 phone: {
-        type: String,
-        required: true,
-        match: [/^[0-9]{10}$/, 'Invalid phone number']
+      type: String,
+      required: true,
+      match: [/^[0-9]{10}$/, 'Invalid phone number']
     },
 subscriptions: [{
     type: String,

@@ -31,6 +31,11 @@ createdBy: {
     ref: 'User',
     required: true,
   },
+  panchayat: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Panchayat',
+    default: null
+  },
 },{timestamps: true})
 
 

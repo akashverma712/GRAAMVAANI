@@ -28,21 +28,23 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
 
 // routes
 
-// import authRoutes from './routes/authRoutes.js';
 import eventRoutes from './routes/event.routes.js';
 import forumRoutes from './routes/forum.routes.js';
 import noticeRoutes from './routes/notice.routes.js'
 import schemeRoutes from './routes/schemes.routes.js'
+import centralRoutes from './routes/centraladmin.routes.js'
+import localRoutes from './routes/localadmin.routes.js'
 
 
 //DECLARATION
 
 
-// app.use('/api/auth', authRoutes);
 app.use('/api/events',eventRoutes)
 app.use('/api/forum',forumRoutes)
 app.use('/api/notice',noticeRoutes)
 app.use('/api/scheme', schemeRoutes)
+app.use('/api/centraladmin', centralRoutes)
+app.use('/api/localadmin', localRoutes)
 
 
 

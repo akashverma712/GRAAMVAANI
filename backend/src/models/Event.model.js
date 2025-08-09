@@ -31,7 +31,12 @@ const eventSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
-  }
+  },
+  panchayat:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Panchayat',
+    default: null
+  },
 },{timestamps: true})
 
 
