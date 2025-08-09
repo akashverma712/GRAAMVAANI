@@ -1,0 +1,55 @@
+{
+    "about_heading": "Why GRAAMVAANI ?",
+    "about_description": "GRAAMVAANI empowers rural communities by bridging the digital divide with a system that works anywhere, anytime.",
+    "cat": {
+      "title": "Empower Your Panchayat",
+      "subtitle": "Bring digital access to your community with GRAAMVAANI",
+      "button": "Request a Demo"
+    },
+    "features": {
+    "title": "Key Features",
+    "offlineTitle": "Offline Notices",
+    "offlineDesc": "Access notices even without internet.",
+    "multilangTitle": "Multilingual",
+    "multilangDesc": "Supports Hindi, Tamil, Telugu & more.",
+    "mobileTitle": "Mobile + SMS",
+    "mobileDesc": "App for smartphones, SMS for feature phones.",
+    "voiceTitle": "Voice Broadcast",
+    "voiceDesc": "Panchayats can send audio messages.",
+    "secureTitle": "Secure Access",
+    "secureDesc": "Only authorized admins can publish.",
+    "uiTitle": "Simple UI",
+    "uiDesc": "Easy for all ages and literacy levels."
+  },
+  "notices": {
+    "heading": "Important Notices",
+    "items": [
+      "Water supply will be off on Monday for maintenance.",
+      "Free health checkup camp on Friday in Community Hall.",
+      "Gram Sabha meeting scheduled for 10th August, 4 PM.",
+      "Mobile internet disruption in the village on Sunday.",
+      "New farming subsidy scheme registration open now."
+    ]
+  },
+  "hero": {
+  "heading": "Connecting Panchayats to the Digital World",
+  "description": "delivers critical updates and community alerts through mobile, SMS, and web — online or offline.",
+  "getStarted": "Get Started",
+  "learnMore": "Learn More"
+},
+"navbar": {
+    "features": "Notice",
+    "about": "Forum",
+    "contact": "Schemes",
+    "signup": "Sign Up"
+  },
+  "footer": {
+		"title": "GRAAMVAANI",
+		"tagline": "Digitally connecting rural India",
+		"email": "Email",
+		"phone": "Phone",
+		"address": "Address",
+		"addressValue": "Rural Tech HQ, India"
+	}
+
+}

@@ -1,78 +1,82 @@
-import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { SignedIn, SignedOut, RedirectToSignIn } from '@clerk/clerk-react';
-
-
+import Layout from './routes/Layout';
+import Home from './routes/Home';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import VerifyEmail from './pages/VerifyEmail';
+import ProtectedRoute from './routes/ProtectedRoute';
+import NoticeDetail from './components/NoticeDetail';
+// import Scheme from './components/Scheme';
+import EventCalendar from './components/EventCalendar';
+import CommunityForum from './components/CommunityForum.jsx';
 
-
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Features from './components/Features';
-import AboutSection from './components/AboutSection';
-import CATsection from './components/CATsection';
-import Footer from './components/Footer';
-import Notices from './components/Notices';
-
-function HomePage() {
-
-	return (
-		<>
-			<Navbar />
-			<Hero />
-			<Features />
-			<Notices />
-			<AboutSection />
-			<CATsection />
-			<Footer />
-		</>
-	);
-}
-
-function App() {
+const App = () => {
 	return (
 		<Routes>
-			<Route
-				path="/"
-				element={<HomePage />}
-			/>
+			{/* Public Routes with shared layout */}
+			<Route element={<Layout />}>
+				<Route
+					index
+					element={<Home />}
+				/>
+				<Route
+					path="notice"
+					element={
+						<ProtectedRoute>
+							<NoticeDetail />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="Forum"
+					element={
+						<ProtectedRoute>
+							<CommunityForum />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="Scheme"
+					element={
+						<ProtectedRoute>
+							<EventCalendar />
+						</ProtectedRoute>
+					}
+				/>
+			</Route>
 
+			{/* Auth Pages */}
 			<Route
-				path="/signup"
+				path="signup"
 				element={<Signup />}
 			/>
 			<Route
-				path="/login"
+				path="login"
 				element={<Login />}
 			/>
 			<Route
-				path="/verify-email-address"
+				path="verify-email-address"
 				element={<VerifyEmail />}
 			/>
 
+			{/* Protected Dashboard */}
 			<Route
-				path="/dashboard"
+				path="dashboard"
 				element={
-					<>
-						<SignedIn>
-							<Dashboard />
-						</SignedIn>
-						<SignedOut>
-							<RedirectToSignIn />
-						</SignedOut>
-					</>
+					<ProtectedRoute>
+						<Dashboard />
+					</ProtectedRoute>
 				}
 			/>
 
+			{/* Catch-all */}
 			<Route
 				path="*"
 				element={<Navigate to="/" />}
 			/>
 		</Routes>
 	);
-}
+};
 
 export default App;
