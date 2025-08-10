@@ -6,7 +6,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendSMS } from "../utils/SMS.js";
 import { param, body, validationResult } from "express-validator";
-
+import Tesseract from "tesseract.js";
 
 
 
@@ -34,6 +34,7 @@ const allUser = asyncHandler(async(req, res)=>{
 })
 
 const createEvent =[
+
     body('title').notEmpty().withMessage('Title is required').trim().escape(),
       body('date').isISO8601().withMessage('Date must be a valid date'),
       body('location').notEmpty().withMessage('Location is required').trim().escape(),
@@ -47,7 +48,14 @@ const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
 const { title, description, date, media, location, audioUrl, panchayat } = req.body
-    
+
+const imagePath = req.file ? `/public/${req.file.filename}` : null;
+  let extractedtext = '';
+
+
+
+
+
     if (!title|| !date || !location || !panchayat ) {
         throw new ApiError(400, "all field Required")
     }
@@ -64,7 +72,22 @@ const { title, description, date, media, location, audioUrl, panchayat } = req.b
   }
 
 
+
    try {
+   if (req.file) {
+    const  { data: { text }} = await Tesseract.recognize(
+               path.join(__dirname, '..',req.file.path),
+               'eng+hin+tam+tel',
+            {logger: m => console.log(m)
+            }
+               
+            )
+            extractedtext =  text.trim()
+            content = content ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
+   }
+
+
+
      const event = new Event({
          title,
          description,
@@ -72,6 +95,8 @@ const { title, description, date, media, location, audioUrl, panchayat } = req.b
          location,
          media,
          audioUrl,
+         imageUrl: imagePath,
+         extractedtext,
          createdBy: req.user.id,
          panchayat: req.user.panchayat
      })
@@ -120,10 +145,21 @@ const updateEvent =[
     throw new ApiError(400, 'Invalid media URL');
   }
 
+  if (req.file) {
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
+      // Optional: Perform OCR on new image if uploaded
+      const { data: { text } } = await Tesseract.recognize(
+        path.join(__dirname, '..', req.file.path),
+        'eng+hin',
+        { logger: m => console.log(m) }
+      );
+      updateData.extractedText = text.trim();
+      updateData.description = description ? `${description}\n\nExtracted Text: ${updateData.extractedText}` : updateData.extractedText;
+    }
 
 try {
     
-        const event = await Event.findByIdAndUpdate(eventId)
+        const event = await Event.findByIdAndUpdate(eventId, {updateData})
         if (!event) {
             throw new ApiError(404, 'Event not found')
         }
@@ -216,6 +252,12 @@ const createNotice =[
 
 const { title, content, category, audioUrl, media, panchayat } = req.body;
 
+ const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+  let extractedtext = '';
+
+
+
+
 if (!title || !content || !category || !panchayat) {
     throw new ApiError(400, 'All field required')
 }
@@ -234,12 +276,28 @@ if (media && media.some(url => !validator.isURL(url))) {
 
 
 try {
+
+    if (req.file) {
+        const  { data: { text }} = await Tesseract.recognize(
+               path.join(__dirname, '..',req.file.path),
+               'eng+hin+tam+tel',
+            {logger: m => console.log(m)
+            }
+               
+            )
+            extractedtext =  text.trim()
+            content = content ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
+    }
+
+
     const notice = new Notice({
         title, 
         content,
         media: req.files ? req.files.map(file => file.path) : [],
         audioUrl,
         category,
+        imageUrl: imagePath,
+        extractedtext,
         createdBy: req.user.id,
         panchayat: req.user.panchayat
     })
@@ -303,9 +361,21 @@ throw new ApiError(400, 'Invalid audio URL');
 }
 
 
+if (req.file) {
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
+      // Optional: Perform OCR on new image if uploaded
+      const { data: { text } } = await Tesseract.recognize(
+        path.join(__dirname, '..', req.file.path),
+        'eng+hin',
+        { logger: m => console.log(m) }
+      );
+      updateData.extractedText = text.trim();
+      updateData.description = description ? `${description}\n\nExtracted Text: ${updateData.extractedText}` : updateData.extractedText;
+    }
+
 try {
     
-        const notice = await Notice.findByIdAndUpdate(noticeId)
+        const notice = await Notice.findByIdAndUpdate(noticeId,{updateData})
         if (!notice) {
             throw new ApiError(404, 'Notice not found')
         }

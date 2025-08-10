@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/Asynchandler.js";
 import { body, validationResult } from "express-validator";
-
+import Tesseract from "tesseract.js";
 
 
 
@@ -99,8 +99,23 @@ const scheme_Create =[  body('title').notEmpty().withMessage('Title is required'
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-  const{ title, description, targetType, target, startDate, endDate } = req.body
+    const{ title, description, targetType, target, startDate, endDate } = req.body
+  
+    const imagePath =req.file ? `/uploads/${req.file.filename}` : null;
+  let extractedtext = '';
+  
+  
 try {
+  if (rq.file) {
+    const  { data: { text }} = await Tesseract.recognize(
+               path.join(__dirname, '..',req.file.path),
+               'eng+hin+tam+tel',
+            {logger: m => console.log(m)   }
+               
+            )
+            extractedtext =  text.trim()
+            content = content ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
+  }
   
   const scheme = new GovernmentScheme({
     title,
@@ -109,6 +124,8 @@ try {
         target: targetType === 'all' ? null : target,
         startDate,
         endDate,
+        imageUrl: imagePath,
+        extractedtext,
         createdBy: req.user._id
   })
   await scheme.save()
@@ -142,9 +159,22 @@ const scheme_Update =[
   const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-const { title, description, targetType, target, startDate, endDate } = req.body;
+    const { title, description, targetType, target, startDate, endDate } = req.body;
+
+    if (req.file) {
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
+      // Optional: Perform OCR on new image if uploaded
+      const { data: { text } } = await Tesseract.recognize(
+        path.join(__dirname, '..', req.file.path),
+        'eng+hin',
+        { logger: m => console.log(m) }
+      );
+      updateData.extractedText = text.trim();
+      updateData.description = description ? `${description}\n\nExtracted Text: ${updateData.extractedText}` : updateData.extractedText;
+    }
+
 try {
-  const scheme = await GovernmentScheme.findByIdAndUpdate(req.params.id, {
+  const scheme = await GovernmentScheme.findByIdAndUpdate(req.params.id,{updateData}, {
         title,
         description,
         targetType,
@@ -152,6 +182,9 @@ try {
         startDate,
         endDate
   },{ new: true})
+
+   
+
   if (!scheme) {
     throw new ApiError(401, "Scheme not found")
   }

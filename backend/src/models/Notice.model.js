@@ -36,6 +36,12 @@ createdBy: {
     ref: 'Panchayat',
     default: null
   },
+  extractedtext:{
+    type: String
+  },
+  imageUrl:  {
+    type: String
+  }
 },{timestamps: true})
 
 

@@ -6,6 +6,11 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { sendSMS } from "../utils/SMS.js";
 import { param, body, validationResult } from "express-validator";
+import Tesseract from 'tesseract.js';
+import { log } from "console";
+
+
+
 
 
 const localAdmin = asyncHandler(async(req, res)=>{
@@ -52,11 +57,17 @@ const createEvent =[
      body('panchayat').optional().isMongoId().withMessage('Valid panchayat ID is required'),
     
        asyncHandler(async(req, res)=>{
+
         const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
 const { title, description, date, media, location, audioUrl, panchayat } = req.body
-    
+
+    const imagePath =  rq.file ? `/public/${rq.file.filename}`: null
+    let extractedtext = '' 
+
+
+
     if (!title|| !date || !location || !panchayat ) {
         throw new ApiError(400, "all field Required")
     }
@@ -73,7 +84,21 @@ const { title, description, date, media, location, audioUrl, panchayat } = req.b
   }
 
 
-   try {
+try {
+
+    if (req.file) {
+        const  { data: { text }} = await Tesseract.recognize(
+           path.join(__dirname, '..',req.file.path),
+           'eng+hin+tam+tel',
+        
+           
+        )
+        extractedtext =  text.trim()
+        content = content ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
+        
+    }
+
+
      const event = new Event({
          title,
          description,
@@ -81,6 +106,8 @@ const { title, description, date, media, location, audioUrl, panchayat } = req.b
          location,
          media,
          audioUrl,
+         imageUrl: imagePath,
+         extractedtext,
          createdBy: req.user.id,
          panchayat: panchayat || null
      })
@@ -129,10 +156,21 @@ const updateEvent =[
     throw new ApiError(400, 'Invalid media URL');
   }
 
+  if (req.file) {
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
+      // Optional: Perform OCR on new image if uploaded
+      const { data: { text } } = await Tesseract.recognize(
+        path.join(__dirname, '..', req.file.path),
+        'eng+hin',
+        { logger: m => console.log(m) }
+      );
+      updateData.extractedText = text.trim();
+      updateData.description = description ? `${description}\n\nExtracted Text: ${updateData.extractedText}` : updateData.extractedText;
+    }
 
 try {
     
-        const event = await Event.findByIdAndUpdate(eventId)
+        const event = await Event.findByIdAndUpdate(eventId, {updateData})
         if (!event) {
             throw new ApiError(404, 'Event not found')
         }
@@ -185,7 +223,7 @@ const deleteEvent = asyncHandler(async(req, res)=>{
         
 })
 
-const createNotice =[
+const createNotice = [
     body('title').notEmpty().withMessage('Title is required').trim().escape(),
       body('content').notEmpty().withMessage('Content is required').trim().escape(),
       body('category').notEmpty().withMessage('Category is required').isIn(['health', 'agriculture', 'general', 'schemes', 'forum']).withMessage('Invalid category'),
@@ -193,10 +231,14 @@ const createNotice =[
       body('panchayat').optional().isMongoId().withMessage('Valid panchayat ID is required'),
 
  asyncHandler(async(req, res)=>{
+
   const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
 const { title, content, category, audioUrl, media, panchayat } = req.body;
+
+ const imagePath = req.file ? `/public/${req.file.filename}` : null ;
+ let extractedtext = '';
 
 if (!title || !content || !category || !panchayat) {
     throw new ApiError(400, 'All field required')
@@ -216,12 +258,28 @@ if (media && media.some(url => !validator.isURL(url))) {
 
 
 try {
+  
+    if (req.file) {
+        const  { data: { text }} = await Tesseract.recognize(
+           path.join(__dirname, '..',req.file.path),
+           'eng+hin+tam+tel',
+        
+           
+        )
+        extractedtext =  text.trim()
+        content = content ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
+    }
+
+
+
     const notice = new Notice({
         title, 
         content,
         media: req.files ? req.files.map(file => file.path) : [],
         audioUrl,
         category,
+        imageUrl: imagePath,
+        extractedtext,
         createdBy: req.user.id,
         panchayat: panchayat || null
     })
@@ -256,7 +314,7 @@ try {
 } catch (error) {
     if (req.files) req.files.forEach(file => require('fs').unlinkSync(file.path));
     
-   throw new ApiError(500, "server error on creating notice")
+   throw new ApiError(500, error?.message || "server error on creating notice")
 }
 
 })
@@ -282,10 +340,22 @@ if (audioUrl && !validator.isURL(audioUrl)) {
 throw new ApiError(400, 'Invalid audio URL');
 }
 
+if (req.file) {
+      updateData.imageUrl = `/uploads/${req.file.filename}`;
+      // Optional: Perform OCR on new image if uploaded
+      const { data: { text } } = await Tesseract.recognize(
+        path.join(__dirname, '..', req.file.path),
+        'eng+hin',
+        { logger: m => console.log(m) }
+      );
+      updateData.extractedText = text.trim();
+      updateData.description = description ? `${description}\n\nExtracted Text: ${updateData.extractedText}` : updateData.extractedText;
+    }
+
 
 try {
     
-        const notice = await Notice.findByIdAndUpdate(noticeId)
+        const notice = await Notice.findByIdAndUpdate(noticeId, {updateData})
         if (!notice) {
             throw new ApiError(404, 'Notice not found')
         }

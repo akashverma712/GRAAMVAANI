@@ -37,6 +37,12 @@ const eventSchema = new Schema({
     ref: 'Panchayat',
     default: null
   },
+  extractedtext:{
+    type: String
+  },
+  imageUrl:{
+    type: String
+  }
 },{timestamps: true})
 
 

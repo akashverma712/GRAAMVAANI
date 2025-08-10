@@ -46,6 +46,12 @@ audioUrl: {
     type: String,
     trim: true,
   },
+  extractedtext:{
+    type: String
+  },
+  imageUrl:  {
+    type: String
+  }
 },{timestamps: true})
 
 
