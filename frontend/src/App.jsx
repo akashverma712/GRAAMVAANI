@@ -7,17 +7,25 @@ import Dashboard from './pages/Dashboard';
 import VerifyEmail from './pages/VerifyEmail';
 import ProtectedRoute from './routes/ProtectedRoute';
 import NoticeDetail from './components/NoticeDetail';
-// import Scheme from './components/Scheme';
 import EventCalendar from './components/EventCalendar';
 import CommunityForum from './components/CommunityForum';
 import AdditionalInfo from './components/AdditionalInfo';
+import LocationFetcher from './components/LocationFetcher'; // ✅ Added
 
 const App = () => {
 	return (
 		<Routes>
 			{/* Public Routes with shared layout */}
 			<Route element={<Layout />}>
-				<Route index element={<Home />} />
+				<Route
+					index
+					element={
+						<>
+							<Home />
+							<LocationFetcher /> {/* ✅ Directly below Home */}
+						</>
+					}
+				/>
 
 				<Route
 					path="notice"

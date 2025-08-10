@@ -8,6 +8,9 @@ const AdditionalInfo = () => {
   const { user } = useUser();
   const [phone, setPhone] = useState("");
   const [district, setDistrict] = useState("");
+  const [pincode, setpincode] = useState("");
+  const [state, setState] = useState("");
+  const [panchayat, setPanchayat] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,6 +21,9 @@ const AdditionalInfo = () => {
         email: user.primaryEmailAddress.emailAddress,
         phone,
         district,
+        pincode,
+        state,
+        panchayat,
         clerkId: user.id,
       });
 
@@ -64,6 +70,48 @@ const AdditionalInfo = () => {
               placeholder="Enter district"
               value={district}
               onChange={(e) => setDistrict(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Pincode
+            </label>
+            <input
+              type="tel"
+              placeholder="Enter pincode"
+              value={pincode}
+              onChange={(e) => setpincode(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              State
+            </label>
+            <input
+              type="text"
+              placeholder="Enter your state"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Panchayat
+            </label>
+            <input
+              type="text"
+              placeholder="Enter your panchayat"
+              value={panchayat}
+              onChange={(e) => setPanchayat(e.target.value)}
               className="w-full px-4 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
