@@ -7,7 +7,9 @@ import { ApiError } from "../utils/ApiError.js";
 import { sendSMS } from "../utils/SMS.js";
 import { param, body, validationResult } from "express-validator";
 import Tesseract from 'tesseract.js';
-import { log } from "console";
+import validator from 'validator'
+import fs from "fs";
+import path from "path";
 
 
 
@@ -16,12 +18,12 @@ import { log } from "console";
 const localAdmin = asyncHandler(async(req, res)=>{
     try {
         
-        const localAdmin = await User.findOne({ role: 'local_admin'}).populate('panchayat', 'name lgd_code')
+        const localAdminUser = await User.findOne({ role: 'local_admin'}).populate('panchayat', 'name lgd_code')
 
         return res.status(200).json(
             new ApiResponse(
                 200,
-                {localAdmin},
+                { localAdminUser },
                 "local admin fetched"
             )
         )
@@ -41,6 +43,14 @@ const verifyLocalAdmin = asyncHandler(async(req, res)=>{
         }
         user.verified = true;
         await user.save()
+
+     return res.status(200).json(
+        new ApiResponse(
+            200,
+            { user },
+            "Local Admin Verified"
+        )
+     )
         
     } catch (error) {
         throw new ApiError(500, error?.message || "server error on not verifing")
@@ -56,55 +66,60 @@ const createEvent =[
       body('audioUrl').optional().isURL().withMessage('Invalid audio URL'),
      body('panchayat').optional().isMongoId().withMessage('Valid panchayat ID is required'),
     
-       asyncHandler(async(req, res)=>{
+    asyncHandler(async(req, res)=>{
 
         const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
 const { title, description, date, media, location, audioUrl, panchayat } = req.body
 
-    const imagePath =  rq.file ? `/public/${rq.file.filename}`: null
+    const imagePath =  req.file ? `/public/${rq.file.filename}`: null
     let extractedtext = '' 
-
+    let filePath = req.file ? path.join(__dirname, '..', req.file.path): null
 
 
     if (!title|| !date || !location || !panchayat ) {
+        if (filePath) await fs.unlink(filePath).catch(() => {});
         throw new ApiError(400, "all field Required")
     }
 
     if (audioUrl && !validator.isURL(audioUrl)) {
+        if (filePath) await fs.unlink(filePath).catch(() => {});
     throw new ApiError(400, 'Invalid audio URL');
   }
 
     if (media && !Array.isArray(media)) {
+        if (filePath) await fs.unlink(filePath).catch(() => {});
     throw new ApiError(400, 'Media must be an array of URLs');
   }
   if (media && media.some(url => !validator.isURL(url))) {
+    if (filePath) await fs.unlink(filePath).catch(() => {});
     throw new ApiError(400, 'Invalid media URL');
   }
 
 
 try {
 
-    if (req.file) {
+    let currentDescription = description || "" ;
+
+    if (filePath) {
         const  { data: { text }} = await Tesseract.recognize(
-           path.join(__dirname, '..',req.file.path),
+           filePath,
            'eng+hin+tam+tel',
-        
            
         )
         extractedtext =  text.trim()
-        content = content ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
+        currentDescription = currentDescription ? `${currentDescription}\n\nExtracted Text : ${extractedtext}` : extractedtext 
         
     }
 
 
      const event = new Event({
          title,
-         description,
+         description: currentDescription,
          date,
          location,
-         media,
+         media : media || [],
          audioUrl,
          imageUrl: imagePath,
          extractedtext,
@@ -117,12 +132,12 @@ try {
      return res.status(200).json(
          new ApiResponse(
              200,
-             {event},
+             { event },
              'Event created Successfully'
          )
      )
    } catch (error) {
-    console.log('New Event');
+    if (filePath) await fs.unlinkSync(filePath).catch(() => {})
     throw new ApiError(500, error?.message || "Event not created due to server error")
     
    }
@@ -143,7 +158,9 @@ const updateEvent =[
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-    const { eventId }= req.params
+   const { eventId }= req.body
+  const { title, date, location, description,imageUrl, audioUrl, media, panchayat, } = req.body
+  let filePath = req.file ? path.join(__dirname, '..', req.file.path) : null
 
     if (audioUrl && !validator.isURL(audioUrl)) {
     throw new ApiError(400, 'Invalid audio URL');
@@ -156,29 +173,51 @@ const updateEvent =[
     throw new ApiError(400, 'Invalid media URL');
   }
 
-  if (req.file) {
-      updateData.imageUrl = `/uploads/${req.file.filename}`;
-      // Optional: Perform OCR on new image if uploaded
-      const { data: { text } } = await Tesseract.recognize(
-        path.join(__dirname, '..', req.file.path),
-        'eng+hin',
-        { logger: m => console.log(m) }
-      );
-      updateData.extractedText = text.trim();
-      updateData.description = description ? `${description}\n\nExtracted Text: ${updateData.extractedText}` : updateData.extractedText;
-    }
 
 try {
     
-        const event = await Event.findByIdAndUpdate(eventId, {updateData})
+        const event = await Event.findByIdAndUpdate(
+            req.params.id,
+            {eventId},
+            {
+                 $set : {
+                title,
+                date,
+                location,
+                description,
+                audioUrl,
+                media,
+                imageUrl,
+                panchayat
+            }
+        },
+            {new: true ,  runValidators: true ,}
+         )
+
         if (!event) {
+            if (filePath) await fs.unlink(filePath).catch(() => {})
             throw new ApiError(404, 'Event not found')
         }
         if (event.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
+           if (filePath) await fs.unlink(filePath).catch(() => {})
             throw new ApiError(400, 'Not authorized to update this event')
         }
-    
-         await event.save();
+
+
+        let currentDescription = updateData.description || event.description;
+           
+        if (req.file) {
+                updateData.imageUrl = `/public/${req.file.filename}`;
+                const { data: { text } } = await Tesseract.recognize(
+                    filePath,
+                    'eng+hin+tam+tel'
+                );
+                updateData.extractedtext = text.trim();
+                currentDescription = currentDescription ? `${currentDescription}\n\nExtracted Text: ${updateData.extractedtext}` : updateData.extractedtext;
+                updateData.description = currentDescription;
+            }
+       
+            await event.save()
     
          return res.status(200).json(
             new ApiResponse(
@@ -188,17 +227,25 @@ try {
             )
          )
 } catch (error) {
+    if (filePath) await fs.unlink(filePath).catch(() => {});
     throw new ApiError(500, error?.message || 'Event updated')
 }
 
 })
 ]
 
-const deleteEvent = asyncHandler(async(req, res)=>{
+const deleteEvent =[
+    param('eventId').isMongoId().withMessage('Invalid event ID'),
+
+
+ asyncHandler(async(req, res)=>{
+    const errors = validationResult(req);
+        if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() })
 
     const { eventId } = req.params
 
     try {
+
         const event = await Event.findByIdAndDelete(eventId)
         if (!event) {
             throw new ApiError(404, 'Event not found');
@@ -222,6 +269,7 @@ const deleteEvent = asyncHandler(async(req, res)=>{
     }
         
 })
+]
 
 const createNotice = [
     body('title').notEmpty().withMessage('Title is required').trim().escape(),
@@ -239,19 +287,24 @@ const { title, content, category, audioUrl, media, panchayat } = req.body;
 
  const imagePath = req.file ? `/public/${req.file.filename}` : null ;
  let extractedtext = '';
+ let filePath = req.file ? path.join(__dirname, '..', req.file.path) : null
 
 if (!title || !content || !category || !panchayat) {
+if (filePath) await fs.unlink(filePath).catch(() => {});
     throw new ApiError(400, 'All field required')
 }
 
 if (audioUrl && !validator.isURL(audioUrl)) {
+    if (filePath) await fs.unlink(filePath).catch(() => {});
     throw new ApiError(400, 'Invalid audio URL');
   }
 
 if (media && !Array.isArray(media)) {
+    if (filePath) await fs.unlink(filePath).catch(() => {});
     throw new ApiError(400, 'Media must be an array of URLs');
   }
 if (media && media.some(url => !validator.isURL(url))) {
+    if (filePath) await fs.unlink(filePath).catch(() => {});
     throw new ApiError(400, 'Invalid media URL');
   }
 
@@ -259,22 +312,24 @@ if (media && media.some(url => !validator.isURL(url))) {
 
 try {
   
-    if (req.file) {
+    let currentContent = content || '';
+
+    if (filePath) {
         const  { data: { text }} = await Tesseract.recognize(
-           path.join(__dirname, '..',req.file.path),
+           filePath,
            'eng+hin+tam+tel',
         
            
         )
         extractedtext =  text.trim()
-        content = content ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
+        currentContent = currentContent ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
     }
 
 
 
     const notice = new Notice({
         title, 
-        content,
+        content ,
         media: req.files ? req.files.map(file => file.path) : [],
         audioUrl,
         category,
@@ -312,7 +367,7 @@ try {
         )
     )
 } catch (error) {
-    if (req.files) req.files.forEach(file => require('fs').unlinkSync(file.path));
+   if (filePath) await fs.unlink(filePath).catch(() => {});
     
    throw new ApiError(500, error?.message || "server error on creating notice")
 }
@@ -333,29 +388,44 @@ const updateNotice =[
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     
-const { noticeId } = req.params
-   
+const { noticeId } = req.body
+const { title, content, category, audioUrl,imageUrl, media, panchayat } = req.body;
+        let filePath = req.file ? path.join(__dirname, '..', req.file.path) : null;
 
 if (audioUrl && !validator.isURL(audioUrl)) {
+ if (filePath) await fs.unlink(filePath).catch(() => {});   
 throw new ApiError(400, 'Invalid audio URL');
 }
+if (media && !Array.isArray(media)) {
+            if (filePath) await fs.unlink(filePath).catch(() => {});
+            throw new ApiError(400, 'Media must be an array of URLs');
+        }
+        if (media && media.some(url => !validator.isURL(url))) {
+            if (filePath) await fs.unlink(filePath).catch(() => {});
+            throw new ApiError(400, 'Invalid media URL');
+        }
 
-if (req.file) {
-      updateData.imageUrl = `/uploads/${req.file.filename}`;
-      // Optional: Perform OCR on new image if uploaded
-      const { data: { text } } = await Tesseract.recognize(
-        path.join(__dirname, '..', req.file.path),
-        'eng+hin',
-        { logger: m => console.log(m) }
-      );
-      updateData.extractedText = text.trim();
-      updateData.description = description ? `${description}\n\nExtracted Text: ${updateData.extractedText}` : updateData.extractedText;
-    }
+
 
 
 try {
     
-        const notice = await Notice.findByIdAndUpdate(noticeId, {updateData})
+        const notice = await Notice.findByIdAndUpdate(
+            req.params.id,
+            {noticeId},
+            {$set:{
+                title,
+                content,
+                category,
+                audioUrl,
+                media,
+                imageUrl,
+                panchayat
+            }},
+            {new: true, runValidators: true}
+
+
+         )
         if (!notice) {
             throw new ApiError(404, 'Notice not found')
         }
@@ -363,8 +433,20 @@ try {
         if (notice.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
             throw new ApiError(401, "you are not authorized to update")
         }
-    
-      await notice.save()
+
+        let currentContent = updateData.content || notice.content;
+            if (req.file) {
+                updateData.imageUrl = `/public/${req.file.filename}`;
+                const { data: { text } } = await Tesseract.recognize(
+                    filePath,
+                    'eng+hin+tam+tel'
+                );
+                updateData.extractedtext = text.trim();
+                currentContent = currentContent ? `${currentContent}\n\nExtracted Text: ${updateData.extractedtext}` : updateData.extractedtext;
+                updateData.content = currentContent;
+            }
+
+            await notice.save()
 
       const populatedNotice = await Notice.findById(notice._id)
       .populate( 'createdBy', 'name').lean()

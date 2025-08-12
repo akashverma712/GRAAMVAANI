@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import { allUser,
+    getNotice,
     createEvent,
     updateEvent,
     deleteEvent,
@@ -15,6 +16,8 @@ const router = Router()
 
 
 router.route('/').get(allUser)
+
+router.route('/get').get(getNotice)
 
 router.route('/event').post(upload.single('image'),createEvent)
 
