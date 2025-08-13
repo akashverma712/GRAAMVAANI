@@ -10,7 +10,7 @@ import NoticeDetail from './components/NoticeDetail';
 import EventCalendar from './components/EventCalendar';
 import CommunityForum from './components/CommunityForum';
 import AdditionalInfo from './components/AdditionalInfo';
-import LocationFetcher from './components/LocationFetcher'; // ✅ Added
+import LocationFetcher from './components/LocationFetcher'; 
 
 const App = () => {
 	return (
@@ -22,7 +22,7 @@ const App = () => {
 					element={
 						<>
 							<Home />
-							<LocationFetcher /> {/* ✅ Directly below Home */}
+							<LocationFetcher /> 
 						</>
 					}
 				/>
