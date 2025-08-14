@@ -1,77 +1,52 @@
-import { asyncHandler } from "../utils/Asynchandler.js";
-import {Clerk} from "@clerk/clerk-sdk-node";
-import { User } from "../models/User.model.js";
+import { ClerkExpressRequireAuth } from "@clerk/clerk-sdk-node";
 import { ApiError } from "../utils/ApiError.js";
+import { User } from "../models/User.model.js";
+import dotenv from "dotenv";
 
 
 
+// Debug: Log Clerk secret key (partially obscured for security)
+//console.log("Clerk Secret Key Loaded:", process.env.CLERK_SECRET_KEY ? `sk_test_***${process.env.CLERK_SECRET_KEY.slice(-4)}` : "MISSING");
 
-
-
-
-
-
-const clerk = new Clerk({ secretKey: process.env.VITE_CLERK_PUBLISHABLE_KEY });
-
-const protect = asyncHandler(async (req, res, next) => {
-  let token;
-
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-
-      token = req.headers.authorization.split(' ')[1];
-
-      const decoded = await clerk.verifyToken(token);
-
-      if (!decoded) {
-        throw new ApiError(401,'Token is not defined')
-      }
-
-      const userId = decoded.sub;
-
-      req.user = await User.findById(userId).select('-password ');
-
-      if (!req.user) {
-        throw new ApiError("User not found");
-      }
-
-      
-      next();
-    } catch (error) {
-      res.status(401).json({ message: 'Not authorized, token failed' });
-    }
-  } else {
-    res.status(401).json({ message: 'Not authorized, no token' });
-  }
+const clerkAuth = ClerkExpressRequireAuth({
+  secretKey: process.env.CLERK_SECRET_KEY,
 });
 
+const requireAuth = [
 
+  clerkAuth,
+  async (req, res, next) => {
+    try {
+      // Debug: Log Clerk auth data
+      console.log("Clerk Auth Data:", req.auth);
+      if (!req.auth || !req.auth.userId) {
+        throw new ApiError(401, "Unauthorized: No Clerk user ID found");
+      }
 
+      // Find or create user in MongoDB
+      let user = await User.findOne({ clerkUserId: req.auth.userId });
+      if (!user) {
+        console.log("Creating new user for Clerk ID:", req.auth.userId);
+        user = new User({
+          clerkUserId: req.auth.userId,
+          name: req.auth.user?.firstName || "Unknown",
+          email: req.auth.user?.emailAddresses?.[0]?.emailAddress || `user_${req.auth.userId}@example.com`,
+          role: "user",
+          panchayat: null, // Default; update via Clerk metadata if needed
+        });
+        await user.save();
+      }
 
-const Centraladmin = (req, res, next) => {
-  if (req.user && req.user?.role === 'central_admin') {
-    next();
-  } else {
-    res.status(401).json({ message: 'Not authorized as Central_admin' });
-  }
-};
+      // Debug: Log MongoDB user
+      console.log("MongoDB User:", user);
 
+      req.user = user; // Set req.user to MongoDB User document
+      next();
+    } catch (error) {
+      console.error("Clerk Auth Error:", error.message, error.stack);
+      next(new ApiError(401, error.message || "Authentication middleware error"));
+    }
+  },
+];
 
-const Localadmin = (req, res, next) => {
-  if (req.user.role ==='local_admin' || req.user.verified) {
-    next();
-  } else {
-    res.status(403).json({ message: 'Not authorized as Local_admin' });
-  }
-}
-
-
-
-export {
-  protect,
-    Centraladmin,
-    Localadmin
-}
-
-
-
+export default requireAuth;

@@ -9,7 +9,7 @@ import { localAdmin,
     updateNotice,
     deleteNotice } from '../controllers/centralAdmin.controller.js'
     
-    import upload from "../middlewares/multer.middleware.js";
+ 
     
 
     const router = Router()
@@ -19,15 +19,15 @@ import { localAdmin,
 
     router.route('/:verifyid').post(verifyLocalAdmin)
 
-    router.route('/event').post(upload.single('image'),createEvent)
+    router.route('/event').post(createEvent)
 
-    router.route('/event').put(upload.single('image'),updateEvent)
+    router.route('/event').put(updateEvent)
 
     router.route('/:eventid').delete(deleteEvent)
 
-    router.route('/notice').post(upload.single('image'), createNotice)
+    router.route('/notice').post( createNotice)
 
-    router.route('/notice').put(upload.single('image'),updateNotice)
+    router.route('/notice').put(updateNotice)
 
     router.route('/:noticeid').delete(deleteNotice)
 

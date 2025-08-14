@@ -11,21 +11,25 @@ content: {
     required: [true, 'Content is required'],
     trim: true,
   },
-media: [
-    {
-      type: String,
-        trim: true,
-    },
-  ],
+
 category: {
     type: String,
     required: [true, 'Category is required'],
     enum: ['health', 'agriculture', 'general', 'schemes']
   },
-audioUrl: {
+
+videoUrl:[ {
     type: String,
     trim: true,
-  },  
+  }],
+  
+  audioUrl:[ {
+    type: String,
+    trim: true,
+  }],
+  imageUrl:[{
+    type: String
+  }],
 createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

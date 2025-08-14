@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/Asynchandler.js";
 import { body, validationResult } from "express-validator";
 import Tesseract from "tesseract.js";
-
+import validator from "validator";
 
 
 
@@ -101,20 +101,26 @@ const scheme_Create =[  body('title').notEmpty().withMessage('Title is required'
 
     const{ title, description, targetType, target, startDate, endDate } = req.body
   
-    const imagePath =req.file ? `/uploads/${req.file.filename}` : null;
+  const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
   let extractedtext = '';
+  let filePath = req.file ? path.join(__dirname, '..', req.file.path): null
+  
   
   
 try {
-  if (rq.file) {
+
+    let currentDescription = description || "" ;
+
+
+  if (filePath) {
     const  { data: { text }} = await Tesseract.recognize(
-               path.join(__dirname, '..',req.file.path),
+               filePath,
                'eng+hin+tam+tel',
             {logger: m => console.log(m)   }
                
             )
             extractedtext =  text.trim()
-            content = content ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
+            currentDescription = currentDescription ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
   }
   
   const scheme = new GovernmentScheme({

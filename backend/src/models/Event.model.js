@@ -15,14 +15,18 @@ const eventSchema = new Schema({
     type: Date,
     required: [true, 'Date is required'],
   },
-  media: [{
+  videoUrl:[ {
     type: String,
     trim: true,
   }],
-  audioUrl: {
+  
+  audioUrl:[ {
     type: String,
     trim: true,
-  },
+  }],
+  imageUrl:[{
+    type: String
+  }],
   location: {
     type: String,
     required: [true, 'Location is required'],
@@ -40,9 +44,6 @@ const eventSchema = new Schema({
   extractedtext:{
     type: String
   },
-  imageUrl:{
-    type: String
-  }
 },{timestamps: true})
 
 

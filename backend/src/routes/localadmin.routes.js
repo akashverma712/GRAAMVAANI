@@ -9,7 +9,8 @@ import { allUser,
     updateNotice,
     deleteNotice} from '../controllers/localAdmin.controller.js'
 
-import upload from "../middlewares/multer.middleware.js";
+import multerMiddleware from "../middlewares/multer.middleware.js";
+import requireAuth from "../middlewares/auth.middleware.js";
 
 
 const router = Router()
@@ -19,17 +20,17 @@ router.route('/').get(allUser)
 
 router.route('/get').get(getNotice)
 
-router.route('/event').post(upload.single('image'),createEvent)
+router.route('/event').post(requireAuth,multerMiddleware,createEvent)
 
-router.route('/notice').put(upload.single('image'),updateEvent)
+router.route('/notic/:id').put(updateEvent)
 
-router.route('/:eventid').delete(deleteEvent)
+router.route('/:event/:id').delete(deleteEvent)
 
-router.route('/notice').post(upload.single('image'),createNotice)
+router.route('/notice').post(createNotice)
 
-router.route('/notice').put(upload.single('image'),updateNotice)
+router.route('/notice/:id').put(updateNotice)
 
-router.route('/:noticeid').delete(deleteNotice)
+router.route('/:notice/:id').delete(deleteNotice)
 
 
 

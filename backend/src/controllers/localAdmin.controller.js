@@ -7,10 +7,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { sendSMS } from "../utils/SMS.js";
 import { param, body, validationResult } from "express-validator";
 import Tesseract from "tesseract.js";
-import validator from 'validator';
-import fs from 'fs'
-import path from 'path'
-
+import fs from 'fs';
+import path from 'path';
+import sharp from 'sharp'
 
 
 
@@ -18,14 +17,14 @@ import path from 'path'
 const allUser = asyncHandler(async(req, res)=>{
     try {
         
-        const user = await User.find({ 
+        const users = await User.find({ 
             role: 'user' , 
             panchayat: req.user.panchayat
         })
         return res.status(200).json(
             new ApiResponse(
                 200,
-                {user},
+                {users},
                 " User found "
             )
         )
@@ -35,95 +34,111 @@ const allUser = asyncHandler(async(req, res)=>{
     }
 })
 
+
+const performOCR = asyncHandler( async (source) =>{
+
+    try {
+        let tempPath = source
+        if (!source.startsWith('http')) {
+      tempPath = `${source}_processed.jpg`;
+      await sharp(source).grayscale().sharpen().normalize().toFile(tempPath)  
+        }
+
+        const { data: { text } } = await Tesseract.recognize(
+      tempPath,
+      'eng+hin+tam+tel',
+      { logger: (m) => console.log(m),
+       
+        tessdata: path.join(__dirname, '../tessdata')
+         }
+    );
+    if (!source.startsWith('http')) fs.unlinkSync(tempPath)
+    return text.trim();
+
+
+    } catch (error) {
+     
+        console.error("OCR error:", error.message);
+        return "";
+    }
+})
+
 const createEvent =[
    body("title").notEmpty().withMessage("Title is required").trim().escape(),
   body("date").isDate().withMessage("Date must be a valid date"),
   body("location").notEmpty().withMessage("Location is required").trim().escape(),
   body("description").optional().trim().escape(),
+  body("imageUrl").optional().isURL().withMessage("Invalid image URL"),
+  body("videoUrl").optional().isURL().withMessage("Invalid video URL"),
   body("audioUrl").optional().isURL().withMessage("Invalid audio URL"),
-  body("panchayat").isMongoId().withMessage("Valid panchayat ID is required"), 
-
-asyncHandler(async(req, res)=>{
+  
+  asyncHandler(async(req, res)=>{
 
  const errors = validationResult(req);
- if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() })
+ if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+ }
+ 
+ 
+ let { title, description, date, location, imageUrl, videoUrl, audioUrl } = req.body;
+ let extractedText = '';
+ let filePath = null; 
+ let imagePath = null;
+ 
+ // Handle file upload
 
-const { title, description, date, media, location, audioUrl, panchayat } = req.body
+ if (req.files?.video) videoUrl = `/public/temp/${req.files.video[0].filename}`;
+    if (req.files?.audio) audioUrl = `/public/${req.files.audio[0].filename}`;
 
-const imagePath = req.file ? `/public/${req.file.filename}` : null;
-  let extractedtext = '';
- let filePath = req.file ? path.join(__dirname, '..', req.file.path): null
-
-
-
-    if (!title|| !date || !location || !panchayat ) {
-        if (filePath) await fs.unlink(filePath).catch(() => {});
-        throw new ApiError(400, "all field Required")
+ 
+    if (req.files?.image) {
+      filePath = path.join(__dirname, "..", req.files.image[0].path);
+      imagePath = `/public/${req.files.image[0].filename}`;
+      imageUrl = imagePath; // Override imageUrl with uploaded file
     }
 
-    if (audioUrl && !validator.isURL(audioUrl)) {
-        if (filePath) await fs.unlink(filePath).catch(() => {});
-    throw new ApiError(400, 'Invalid audio URL');
-  }
-
-    if (media && !Array.isArray(media)) {
-        if (filePath) await fs.unlink(filePath).catch(() => {});
-    throw new ApiError(400, 'Media must be an array of URLs');
-  }
-  if (media && media.some(url => !validator.isURL(url))) {
-    if (filePath) await fs.unlink(filePath).catch(() => {});
-    throw new ApiError(400, 'Invalid media URL');
-  }
 
 
+ if (!title || !date || !location){
+    if (filePath) fs.unlinkSync(filePath);
+     throw new ApiError(400, "Title, date, and location are required")
+ }
 
-   try {
+ try {
 
-    let currentDescription = description || '';
-
-
-   if (filePath) {
-    const  { data: { text }} = await Tesseract.recognize(
-              filePath,
-               'eng+hin+tam+tel',
-            {logger: m => console.log(m)
-            }
-               
-            )
-            extractedtext =  text.trim()
-            currentDescription = currentDescription ? 
-            `${currentDescription}\n\nExtracted Text : ${extractedtext}` : extractedtext 
-   }
-
-
+  let currentDescription = description || '';
+      const ocrSource = imageUrl || filePath; 
+      if (ocrSource) {
+        extractedText = await performOCR(ocrSource);
+        currentDescription = currentDescription ? `${currentDescription}\n\nExtracted Text: ${extractedText}` : extractedText;
+      }
 
      const event = new Event({
          title,
          description: currentDescription,
          date,
          location,
-         media: media || [],
+         video: videoUrl,
+         image: imageUrl ,
          audioUrl,
-         imageUrl: imagePath,
-         extractedtext,
-         createdBy: req.user.id,
+         extractedText,
+         createdBy: req.user._id,
          panchayat: req.user.panchayat
      })
  
      await event.save()
  
-     return res.status(200).json(
+     return res.status(201).json(
          new ApiResponse(
-             200,
+             201,
              { event },
              'Event created Successfully'
          )
      )
    } catch (error) {
-        if (filePath) await fs.unlinkSync(filePath).catch(() => {})
-    
-    throw new ApiError(500, error?.message || "Event not created due to server error")
-    
+      if (filePath) fs.unlinkSync(filePath);
+       throw new ApiError(500, error?.message || "Event not created due to server error")
+     
    }
 })
 ]
@@ -132,73 +147,70 @@ const imagePath = req.file ? `/public/${req.file.filename}` : null;
 
 const updateEvent =[
 
- param('eventId').isMongoId().withMessage('Invalid event ID'),
-    body('title').optional().notEmpty().withMessage('Title cannot be empty').trim().escape(),
-    body('date').optional().isISO8601().withMessage('Date must be a valid date'),
-    body('location').optional().notEmpty().withMessage('Location cannot be empty').trim().escape(),
-    body('description').optional().trim().escape(),
-    body('audioUrl').optional().isURL().withMessage('Invalid audio URL'),
-    body('panchayat').optional().isMongoId().withMessage('Valid panchayat ID is required') ,  
+ param('id').isMongoId().withMessage('Invalid event ID'),
+  body('title').optional().notEmpty().withMessage('Title cannot be empty').trim().escape(),
+  body('date').optional().isDate().withMessage('Date must be a valid date'),
+  body('location').optional().notEmpty().withMessage('Location cannot be empty').trim().escape(),
+  body('description').optional().trim().escape(),
+  body('audioUrl').optional().isURL().withMessage('Invalid audio URL'),
+  body('media').optional().isArray().withMessage("Media must be an array of URLs"),
 
  asyncHandler(async(req, res)=>{
-      
 
-    const { eventId }= req.body
+      const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() })
+
+    
     const { title, description, date, location,imageUrl, audioUrl, media } = req.body;
+   
+    const imagePath = req.file ? `/public/${req.file.filename}` : undefined
+   
     let filePath = req.file ? path.join(__dirname, '..', req.file.path) : null
 
 
     if (audioUrl && !validator.isURL(audioUrl)) {
+     if (filePath) fs.unlink(filePath, () => {});   
     throw new ApiError(400, 'Invalid audio URL');
   }
 
    if (media && !Array.isArray(media)) {
+    if (filePath) fs.unlink(filePath, () => {});
     throw new ApiError(400, 'Media must be an array of URLs');
   }
   if (media && media.some(url => !validator.isURL(url))) {
+    if (filePath) fs.unlink(filePath, () => {});
     throw new ApiError(400, 'Invalid media URL');
   }
 
 
 try {
     
-        const event = await Event.findByIdAndUpdate(
-            req.params.id,
-            {eventId},
-            {$set:{
-                title,
-                description,
-                date,
-                location,
-                audioUrl,
-                media,
-                imageUrl,
-                panchayat
-            }},
-            {new: true , runValidators: true}
-        )
+        const event = await Event.findById(req.params.id)
         if (!event) {
+            if (filePath) fs.unlink(filePath, () => {});
             throw new ApiError(404, 'Event not found')
         }
-        if (event.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
-            throw new ApiError(400, 'Not authorized to update this event')
-        
-        }
 
-         let currentDescription = updateData.description || event.description;
+
+         let currentDescription = description || event.description;
+         let extractedtext = event.extractedtext
                    
-                if (req.file) {
-                        updateData.imageUrl = `/public/${req.file.filename}`;
+                if (filePath) {
+                      
                         const { data: { text } } = await Tesseract.recognize(
                             filePath,
-                            'eng+hin+tam+tel'
+                            'eng+hin+tam+tel',
+                            { logger: m => console.log(m)
+                            }
                         );
-                        updateData.extractedtext = text.trim();
+                        extractedtext = text.trim();
                         currentDescription = currentDescription ? `${currentDescription}\n\nExtracted Text: ${updateData.extractedtext}` : updateData.extractedtext;
+                       updateData.imageUrl = imagePath
+                       updateData.extractedtext = extractedtext
                         updateData.description = currentDescription;
                     }
                
-    
+        Object.assign(event, updateData)
          await event.save();
     
          return res.status(200).json(
@@ -209,6 +221,7 @@ try {
             )
          )
 } catch (error) {
+    if (filePath) fs.unlink(filePath, () => {});
     throw new ApiError(500, error?.message || 'Event updated')
 }
 
@@ -218,25 +231,22 @@ try {
 
 
 const deleteEvent =[
-     param('eventId').isMongoId().withMessage('Invalid event ID'),
+    param('id').isMongoId().withMessage('Invalid event ID'),
 
      asyncHandler(async(req, res)=>{
-         const errors = validationResult(req);
+
+    const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-    const { eventId } = req.params
 
     try {
-        const event = await Event.findByIdAndDelete(eventId)
+
+        const event = await Event.findById(req.params.id)
         if (!event) {
             throw new ApiError(404, 'Event not found');
         }
     
-        if (event.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
-            throw new ApiError(404, 'Not Authorized to delete')
-        }
-    
-        await event.remove()
+        await Event.findByIdAndDelete(req.params.id)
     
         return res.status(200).json(
             new ApiResponse(
@@ -255,14 +265,14 @@ const deleteEvent =[
 
 const getNotice = asyncHandler(async(req, res)=>{
     try {
-        const notice = await Notice.find({
+        const notices = await Notice.find({
             $or: [{ panchayat: null}, {panchayat: req.user.panchayat}]
-        })
+        }).populate('createdBy', 'name')
 
         return res.status(201).json(
             new ApiResponse(
                 201,
-                {notice},
+                { notices },
                 "all notices displayed"
             )
         )
@@ -272,71 +282,72 @@ const getNotice = asyncHandler(async(req, res)=>{
     }
 })
 
-const createNotice = asyncHandler(async(req, res)=>{
+const createNotice =[
+  body("title").notEmpty().withMessage("Title is required").trim().escape(),
+  body("content").optional().trim().escape(),
+  body("category")
+    .notEmpty()
+    .withMessage("Category is required")
+    .isIn(["health", "agriculture", "general", "schemes", "forum"])
+    .withMessage("Invalid category"),
+  body("imageUrl").optional().isURL().withMessage("Invalid image URL"),
+  body("videoUrl").optional().isURL().withMessage("Invalid video URL"),
+  body("audioUrl").optional().isURL().withMessage("Invalid audio URL"),
+
+ asyncHandler(async(req, res)=>{
 
      const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-const { title, content, category, audioUrl, media, panchayat } = req.body;
+const { title, content, category, audioUrl, videoUrl, imageUrl  } = req.body;
 
- const imagePath = req.file ? `/public/${req.file.filename}` : null;
-  let extractedtext = '';
- let filePath = req.file ? path.join(__dirname, '..', req.file.path) : null
-
-
+let extractedText = "";
+let filePath = null; // Always defined
+let imagePath = null;
 
 
-if (!title || !content || !category ) {
-    if (filePath) await fs.unlink(filePath).catch(() => {});
+if (req.files?.image) {
+      filePath = path.join(__dirname, "..", req.files.image[0].path);
+      imagePath = `/public/temp/${req.files.image[0].filename}`;
+      imageUrl = imagePath; // Override imageUrl with uploaded file
+    }
+ if (req.files?.video) videoUrl = `/public/temp/${req.files.video[0].filename}`;
+ if (req.files?.audio) audioUrl = `/public/temp/${req.files.audio[0].filename}`;
+
+
+
+
+
+if (!title ||  !category ) {
+    if (filePath) fs.unlinkSync(filePath);
     
     throw new ApiError(400, 'All field required')
 }
 
-if (audioUrl && !validator.isURL(audioUrl)) {
-    if (filePath) await fs.unlink(filePath).catch(() => {});
-    
-    throw new ApiError(400, 'Invalid audio URL');
-  }
-
-if (media && !Array.isArray(media)) {
-    if (filePath) await fs.unlink(filePath).catch(() => {});
-    
-    throw new ApiError(400, 'Media must be an array of URLs');
-  }
-if (media && media.some(url => !validator.isURL(url))) {
-    if (filePath) await fs.unlink(filePath).catch(() => {});
-    
-    throw new ApiError(400, 'Invalid media URL');
-  }
 
 
 
 try {
   
     let currentContent = content || '';
-    if (filePath) {
-        const  { data: { text }} = await Tesseract.recognize(
-              filePath,
-            'eng+hin+tam+tel',
-            {
-                logger: m => console.log(m)
-            }
-               
-            )
-            extractedtext =  text.trim()
-            content = content ? `${content}\n\nExtracted Text : ${extractedtext}` : extractedtext 
-    }
+    const ocrSource = imageUrl || filePath;
+      if (ocrSource) {
+        extractedText = await performOCR(ocrSource);
+        currentContent = currentContent
+          ? `${currentContent}\n\nExtracted Text: ${extractedText}`
+          : extractedText;
+      }
 
 
     const notice = new Notice({
         title, 
-        content,
-        media: req.files ? req.files.map(file => file.path) : [],
+        content: currentContent,
+        videoUrl,
         audioUrl,
         category,
-        imageUrl: imagePath,
-        extractedtext,
-        createdBy: req.user.id,
+        imageUrl,
+        extractedText,
+        createdBy: req.user._id,
         panchayat: req.user.panchayat
     })
     
@@ -368,84 +379,98 @@ try {
         )
     )
 } catch (error) {
-   if (filePath) await fs.unlink(filePath).catch(() => {});
+     if (filePath) fs.unlinkSync(filePath);
 
    throw new ApiError(500, "server error on creating notice")
 }
 
 })
-
+]
 
 
 const updateNotice =[
-  param('noticeId').isMongoId().withMessage('Invalid notice ID'),
-  body('title').optional().notEmpty().withMessage('Title cannot be empty').trim().escape(),
-  body('content').optional().notEmpty().withMessage('Content cannot be empty').trim().escape(),
-  body('category').optional().isIn(['health', 'agriculture', 'general', 'schemes', 'forum']).withMessage('Invalid category'),
-  body('audioUrl').optional().isURL().withMessage('Invalid audio URL'),   
-  body('panchayat').optional().isMongoId().withMessage('Valid panchayat ID is required'),
-
-
+ param("id").isMongoId().withMessage("Invalid notice ID"),
+  body("title").optional().notEmpty().withMessage("Title cannot be empty").trim().escape(),
+  body("content").optional().trim().escape(),
+  body("category")
+    .optional()
+    .isIn(["health", "agriculture", "general", "schemes", "forum"])
+    .withMessage("Invalid category"),
+  body("imageUrl").optional().isURL().withMessage("Invalid image URL"),
+  body("videoUrl").optional().isURL().withMessage("Invalid video URL"),
+  body("audioUrl").optional().isURL().withMessage("Invalid audio URL"),
 asyncHandler(async(req, res)=> {
+
 
  const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
     
-const { noticeId } = req.body
-const { title, content, category, audioUrl, media, panchayat } = req.body;
-let filePath = req.file ? path.join(__dirname, '..', req.file.path) : null;
 
-   
+    if (!req.user || !req.user._id) {
+      throw new ApiError(401, "User not authenticated");
+    }
 
-if (audioUrl && !validator.isURL(audioUrl)) {
-throw new ApiError(400, 'Invalid audio URL');
-}
+
+const { title, content, category, audioUrl, media } = req.body;
+ let extractedText = "";
+    let filePath = null;
+    let imagePath = null;
+
+if (req.files?.image) {
+      filePath = path.join(__dirname, "..", req.files.image[0].path);
+      imagePath = `/public/${req.files.image[0].filename}`;
+      imageUrl = imagePath;
+    }
+    if (req.files?.video) videoUrl = `/public/${req.files.video[0].filename}`;
+    if (req.files?.audio) audioUrl = `/public/${req.files.audio[0].filename}`;
+
+
 
 
 
 try {
     
-        const notice = await Notice.findByIdAndUpdate(
-            rq.params.id,
-            {noticeId},
-            {$set:{
-                title,
-                content,
-                category,
-                audioUrl,
-                media,
-                imageUrl,
-                panchayat
-            }},
-            {new: true, runValidators: true}
-        )
+        const notice = await Notice.findById(req.params.id)
         if (!notice) {
+           if (filePath) fs.unlinkSync(filePath);
             throw new ApiError(404, 'Notice not found')
         }
     
-        if (notice.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
-            throw new ApiError(401, "you are not authorized to update")
+      let currentContent = content || notice.content;
+      const ocrSource = imageUrl || filePath;
+      if (ocrSource) {
+        extractedText = await performOCR(ocrSource);
+        currentContent = currentContent
+          ? `${currentContent}\n\nExtracted Text: ${extractedText}`
+          : extractedText;
+      } else {
+        extractedText = notice.extractedText;
+      }
+
+      if (title) notice.title = title;
+      if (currentContent) notice.content = currentContent;
+      if (category) notice.category = category;
+      if (imageUrl) notice.imageUrl = imageUrl;
+      if (videoUrl) notice.videoUrl = videoUrl;
+      if (audioUrl) notice.audioUrl = audioUrl;
+      if (media) notice.media = media;
+      if (extractedText) notice.extractedText = extractedText;
+
+      await notice.save();
+
+      const populatedNotice = await Notice.findById(notice._id).populate("createdBy", "name").lean();
+
+      const users = await User.find({ subscriptions: category || notice.category }).select("phone");
+      const phoneNumbers = users.map((user) => user.phone).filter((phone) => phone);
+      if (phoneNumbers.length > 0) {
+        try {
+          await sendSMS(phoneNumbers, `Updated ${category || notice.category} notice: ${title || notice.title}`);
+        } catch (smsError) {
+          console.error("SMS sending failed:", smsError.message);
         }
+      }
 
-         let currentContent = updateData.content || notice.content;
-                    if (req.file) {
-                        updateData.imageUrl = `/public/${req.file.filename}`;
-                        const { data: { text } } = await Tesseract.recognize(
-                            filePath,
-                            'eng+hin+tam+tel'
-                        );
-                        updateData.extractedtext = text.trim();
-                        currentContent = currentContent ? `${currentContent}\n\nExtracted Text: ${updateData.extractedtext}` : updateData.extractedtext;
-                        updateData.content = currentContent;
-                    }
-
-
-    
-      await notice.save()
-
-      const populatedNotice = await Notice.findById(notice._id)
-      .populate( 'createdBy', 'name').lean()
-    
+   
       return res.status(200).json(
         new ApiResponse(
             200,
@@ -461,38 +486,38 @@ try {
 ]
 
 
-const deleteNotice =[
-    param('noticeId').isMongoId().withMessage('Invalid notice ID'),
 
-    asyncHandler(async(req, res)=>{
+const deleteNotice = [
+  param("id").isMongoId().withMessage("Invalid notice ID"),
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-    const {noticeId} = req.params
-try {
-    
-        const notice = Notice.findByIdAndDelete(noticeId)
-    
-        if (!notice) {
-            throw new ApiError(402, "Notice not found")
-        }
-    
-        if (notice.createdBy.toString() !== req.user.id && req.user.role !== 'admin') {
-                throw new ApiError(401, "you are not authorized to update")
-            }
-    
-        await notice.remove()
-    
-        return res.status(200).json(
-            new ApiResponse(
-                200,
-                {},
-                "Notice deleted successfully"
-            )
-        )
-} catch (error) {
-    throw new ApiError(403, error?.message || "Server Error in deleting Notice")
-}
-})
-]
+    // Debug: Log req.user
+    console.log("DeleteNotice - req.user:", req.user);
+
+    if (!req.user || !req.user._id) {
+      throw new ApiError(401, "User not authenticated");
+    }
+
+    try {
+      const notice = await Notice.findById(req.params.id);
+      if (!notice) {
+        throw new ApiError(404, "Notice not found");
+      }
+
+      if (notice.createdBy.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+        throw new ApiError(403, "Not authorized to delete this notice");
+      }
+
+      await Notice.findByIdAndDelete(req.params.id);
+
+      return res.status(200).json(new ApiResponse(200, null, "Notice deleted successfully"));
+    } catch (error) {
+      throw new ApiError(500, error?.message || "Error deleting notice");
+    }
+  }),
+];
 
 export {
     allUser,

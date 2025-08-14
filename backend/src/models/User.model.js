@@ -2,7 +2,15 @@ import mongoose, { Schema } from "mongoose";
 
 
 const userShema = new Schema({
-name: {
+
+  clerkUserId: {
+     type: String,
+      unique: true,
+       required: true
+       },
+
+
+  name: {
         type: String,
         required: [true, 'Name is required'],
     },
