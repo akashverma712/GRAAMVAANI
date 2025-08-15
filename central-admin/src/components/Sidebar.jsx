@@ -1,4 +1,4 @@
-import { FaUsers, FaChartLine, FaCog, FaHome, FaSignOutAlt } from "react-icons/fa";
+import { FaUsers, FaChartLine, FaCog, FaHome, FaSignOutAlt, FaSms } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { useUser, SignOutButton, SignedIn } from "@clerk/clerk-react";
 
@@ -14,6 +14,7 @@ const Sidebar = () => {
           <SidebarItem icon={<FaUsers />} label="Event" to="/event" />
           <SidebarItem icon={<FaChartLine />} label="Notices" to="/notices" />
           <SidebarItem icon={<FaCog />} label="Scheme" to="/Scheme" />
+          <SidebarItem icon={<FaSms />} label="Send SMS" to="/send-sms" /> {/* ✅ Added Send SMS link */}
         </nav>
       </div>
 
@@ -25,7 +26,9 @@ const Sidebar = () => {
           )}
           <div className="flex-1">
             <div>{user?.fullName || "Admin"}</div>
-            <div className="text-xs text-gray-500 truncate">{user?.primaryEmailAddress?.emailAddress}</div>
+            <div className="text-xs text-gray-500 truncate">
+              {user?.primaryEmailAddress?.emailAddress}
+            </div>
           </div>
           <SignOutButton>
             <button className="text-red-500 hover:text-red-700" title="Sign Out">

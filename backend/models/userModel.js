@@ -56,7 +56,7 @@ const userSchema = new mongoose.Schema({
   clerkId: {
     type: String,
     required: true,
-    unique: true // keep this if every Clerk user is unique
+    unique: true // 
   }
 });
 

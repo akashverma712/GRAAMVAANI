@@ -4,12 +4,12 @@ const { clerkClient } = require("@clerk/clerk-sdk-node");
 
 const router = express.Router();
 
-// 📌 Get Users + Chart Data + Local Admins by City
+
 router.get("/users-data", async (req, res) => {
   console.log("📌 [INFO] /users-data route hit");
 
   try {
-    // 1️⃣ Fetch MongoDB Users
+   
     const mongoUsers = await User.find({});
     console.log(`✅ MongoDB returned ${mongoUsers.length} users`);
 
