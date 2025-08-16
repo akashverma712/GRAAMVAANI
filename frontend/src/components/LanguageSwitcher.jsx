@@ -7,7 +7,7 @@ const LanguageSwitcher = () => {
   const dropdownRef = useRef();
 
   const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
+    i18n.changeLanguage(lng); 
     setOpen(false);
   };
 

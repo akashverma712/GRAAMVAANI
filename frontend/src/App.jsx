@@ -7,9 +7,10 @@ import Dashboard from './pages/Dashboard';
 import VerifyEmail from './pages/VerifyEmail';
 import ProtectedRoute from './routes/ProtectedRoute';
 import NoticeDetail from './components/NoticeDetail';
-// import Scheme from './components/Scheme';
 import EventCalendar from './components/EventCalendar';
-import CommunityForum from './components/CommunityForum.jsx';
+import CommunityForum from './components/CommunityForum';
+import AdditionalInfo from './components/AdditionalInfo';
+import LocationFetcher from './components/LocationFetcher'; 
 
 const App = () => {
 	return (
@@ -18,8 +19,14 @@ const App = () => {
 			<Route element={<Layout />}>
 				<Route
 					index
-					element={<Home />}
+					element={
+						<>
+							<Home />
+							<LocationFetcher /> 
+						</>
+					}
 				/>
+
 				<Route
 					path="notice"
 					element={
@@ -44,21 +51,20 @@ const App = () => {
 						</ProtectedRoute>
 					}
 				/>
+				<Route
+					path="additional-info"
+					element={
+						<ProtectedRoute>
+							<AdditionalInfo />
+						</ProtectedRoute>
+					}
+				/>
 			</Route>
 
 			{/* Auth Pages */}
-			<Route
-				path="signup"
-				element={<Signup />}
-			/>
-			<Route
-				path="login"
-				element={<Login />}
-			/>
-			<Route
-				path="verify-email-address"
-				element={<VerifyEmail />}
-			/>
+			<Route path="signup" element={<Signup />} />
+			<Route path="login" element={<Login />} />
+			<Route path="verify-email-address" element={<VerifyEmail />} />
 
 			{/* Protected Dashboard */}
 			<Route
@@ -71,10 +77,7 @@ const App = () => {
 			/>
 
 			{/* Catch-all */}
-			<Route
-				path="*"
-				element={<Navigate to="/" />}
-			/>
+			<Route path="*" element={<Navigate to="/" />} />
 		</Routes>
 	);
 };

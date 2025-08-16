@@ -1,109 +1,114 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-
+import { FaRegFilePdf, FaArrowRight, FaCalendarAlt } from 'react-icons/fa';
 const dummyNotices = [
-  {
-    id: 1,
-    title: "Gram Sabha Meeting on Clean Water",
-    date: "2025-07-21",
-    category: "Health",
-    description: "Discussion on safe drinking water initiatives and waterborne disease prevention.",
-    pdfUrl: "/pdfs/clean-water-meeting.pdf",
-  },
-  {
-    id: 2,
-    title: "Government Scheme Awareness Drive",
-    date: "2025-07-25",
-    category: "Education",
-    description: "Details about the schemes for youth and women development.",
-    pdfUrl: "/pdfs/scheme-awareness.pdf",
-  },
-  {
-    id: 3,
-    title: "Farmer Loan Waiver Update",
-    date: "2025-07-20",
-    category: "Agriculture",
-    description: "Updates on farmer loan waiver applications.",
-    pdfUrl: "/pdfs/loan-waiver.pdf",
-  },
+	{
+		id: 1,
+		title: 'Gram Sabha Meeting on Clean Water',
+		date: '2025-07-21',
+		category: 'Health',
+		description: 'Discussion on safe drinking water initiatives and waterborne disease prevention.',
+		pdfUrl: '/pdfs/clean-water-meeting.pdf',
+	},
+	{
+		id: 2,
+		title: 'Government Scheme Awareness Drive',
+		date: '2025-07-25',
+		category: 'Education',
+		description: 'Details about the schemes for youth and women development.',
+		pdfUrl: '/pdfs/scheme-awareness.pdf',
+	},
+	{
+		id: 3,
+		title: 'Farmer Loan Waiver Update',
+		date: '2025-07-20',
+		category: 'Agriculture',
+		description: 'Updates on farmer loan waiver applications.',
+		pdfUrl: '/pdfs/loan-waiver.pdf',
+	},
 ];
 
-const categories = ["All", "Health", "Education", "Agriculture"];
+const categories = ['All', 'Health', 'Education', 'Agriculture'];
 
 const Notices = () => {
-  const [filter, setFilter] = useState("All");
+	const [filter, setFilter] = useState('All');
 
-  const filtered = filter === "All"
-    ? dummyNotices
-    : dummyNotices.filter(notice => notice.category === filter);
+	const filtered = filter === 'All' ? dummyNotices : dummyNotices.filter((notice) => notice.category === filter);
 
-  return (
-    <section className="px-4 py-12 max-w-6xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-3xl font-bold mb-6 text-center text-green-700">Latest Notices</h2>
+	return (
+		<section className="px-4 py-12 max-w-5xl mx-auto">
+			<motion.div
+				initial={{ opacity: 0, y: 20 }}
+				whileInView={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.5 }}
+				viewport={{ once: true }}>
+				<h2 className="text-3xl font-bold mb-8 text-center text-green-700">Latest Notices</h2>
 
-        <div className="flex justify-center mb-6 gap-3 flex-wrap">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              className={`px-4 py-2 rounded-full text-sm font-semibold border
-                ${filter === cat ? "bg-green-600 text-white" : "text-green-700 border-green-600"}
+				{/* Category Filters */}
+				<div className="flex justify-center mb-8 gap-3 flex-wrap">
+					{categories.map((cat) => (
+						<button
+							key={cat}
+							className={`px-4 py-2 rounded-full text-sm font-semibold border transition
+                ${filter === cat ? 'bg-green-600 text-white shadow' : 'text-green-700 border-green-600 hover:bg-green-50'}
               `}
-              onClick={() => setFilter(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+							onClick={() => setFilter(cat)}>
+							{cat}
+						</button>
+					))}
+				</div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filtered.map(notice => (
-            <motion.div
-              key={notice.id}
-              whileHover={{ scale: 1.02 }}
-              className="border rounded-xl p-5 shadow-md hover:shadow-lg transition flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-sm text-gray-500">
-                    {new Date(notice.date).toDateString()}
-                  </span>
-                  <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded-full">
-                    {notice.category}
-                  </span>
-                </div>
-                <h3 className="text-xl font-semibold mb-1">{notice.title}</h3>
-                <p className="text-sm text-gray-700">{notice.description}</p>
-              </div>
-              <div className="mt-4 flex gap-3">
-                <Link
-                  to={`/notice/${notice.id}`}
-                  className="text-green-600 hover:underline text-sm font-medium"
-                >
-                  View Details
-                </Link>
-                <a
-                  href={notice.pdfUrl}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-600 hover:underline"
-                >
-                  📄 Download PDF
-                </a>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-    </section>
-  );
+				{/* Notice List */}
+				<div className="space-y-4">
+					{filtered.map((notice, idx) => (
+						<motion.div
+							key={notice.id}
+							whileHover={{ scale: 1.01, backgroundColor: '#f9fdfb' }}
+							className="flex items-start gap-4 p-5 border rounded-lg shadow-sm hover:shadow-md transition">
+							{/* Timeline Dot */}
+							<div className="flex flex-col items-center">
+								<span className="w-3 h-3 bg-green-600 rounded-full mt-2"></span>
+								{idx < filtered.length - 1 && <span className="w-[2px] h-full bg-green-200"></span>}
+							</div>
+
+							{/* Notice Content */}
+							<div className="flex-1">
+								<div className="flex flex-wrap items-center gap-3 mb-2">
+									<span className="flex items-center gap-1 text-sm text-gray-500">
+										<FaCalendarAlt /> {new Date(notice.date).toLocaleDateString()}
+									</span>
+									<span className="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-700 rounded-full">{notice.category}</span>
+								</div>
+
+								<h3 className="text-lg font-semibold text-gray-800">{notice.title}</h3>
+								<p className="text-sm text-gray-600 mt-1">{notice.description}</p>
+
+								{/* Actions */}
+								<div className="mt-3 flex gap-4 text-sm">
+									<Link
+										to={`/notice/${notice.id}`}
+										className="flex items-center gap-1 text-green-600 font-medium hover:underline">
+										View Details <FaArrowRight size={12} />
+									</Link>
+									{notice.pdfUrl && (
+										<a
+											href={notice.pdfUrl}
+											download
+											target="_blank"
+											rel="noopener noreferrer"
+											className="flex items-center gap-1 text-blue-600 hover:underline">
+											<FaRegFilePdf /> Download PDF
+										</a>
+									)}
+								</div>
+							</div>
+						</motion.div>
+					))}
+				</div>
+			</motion.div>
+		</section>
+	);
 };
 
 export default Notices;

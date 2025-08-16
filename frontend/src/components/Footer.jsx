@@ -1,28 +1,101 @@
+
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
+
+
+
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+
 
 const Footer = () => {
-	const { t } = useTranslation();
+  const { t } = useTranslation();
 
-	return (
-		<footer
-			id="contact"
-			className="bg-gray-800 text-white py-10 text-sm">
-			<div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between">
-				<div>
-					<h4 className="text-lg font-bold">{t('footer.title')}</h4>
-					<p className="text-gray-400 mt-2">{t('footer.tagline')}</p>
-				</div>
-				<div className="space-y-1 mt-6 md:mt-0">
-					<p>{t('footer.email')} : support@graamvaani.in</p>
-					<p>{t('footer.phone')} : +91 98765 43210</p>
-					<p>
-						{t('footer.address')} : {t('footer.addressValue')}
-					</p>
-				</div>
-			</div>
-		</footer>
-	);
+  return (
+    <footer className="bg-gray-900 text-gray-300 text-sm">
+      {/* Main Footer */}
+      <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
+        {/* Brand */}
+        <div>
+          <h4 className="text-xl font-bold text-white">{t("footer.title")}</h4>
+          <p className="text-gray-400 mt-3">{t("footer.tagline")}</p>
+        </div>
+
+        {/* Quick Links */}
+        <div>
+          <h5 className="text-lg font-semibold text-white mb-4">
+            {t("footer.quickLinks")}
+          </h5>
+          <ul className="space-y-2">
+            <li>
+              <a href="/" className="hover:text-white transition-colors">
+                {t("footer.home")}
+              </a>
+            </li>
+            <li>
+              <a href="/about" className="hover:text-white transition-colors">
+                {t("footer.about")}
+              </a>
+            </li>
+            <li>
+              <a href="/services" className="hover:text-white transition-colors">
+                {t("footer.services")}
+              </a>
+            </li>
+            <li>
+              <a href="/contact" className="hover:text-white transition-colors">
+                {t("footer.contact")}
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Contact */}
+        <div>
+          <h5 className="text-lg font-semibold text-white mb-4">
+            {t("footer.contactUs")}
+          </h5>
+          <p>
+            <span className="font-medium">{t("footer.email")}:</span>{" "}
+            support@graamvaani.in
+          </p>
+          <p>
+            <span className="font-medium">{t("footer.phone")}:</span> +91 98765 43210
+          </p>
+          <p>
+            <span className="font-medium">{t("footer.address")}:</span>{" "}
+            {t("footer.addressValue")}
+          </p>
+        </div>
+
+        {/* Social Media */}
+        <div>
+          <h5 className="text-lg font-semibold text-white mb-4">
+            {t("footer.followUs")}
+          </h5>
+          <div className="flex space-x-4">
+            <a href="#" className="hover:text-white">
+              <FaFacebook size={20} />
+            </a>
+            <a href="#" className="hover:text-white">
+              <FaTwitter size={20} />
+            </a>
+            <a href="#" className="hover:text-white">
+              <FaInstagram size={20} />
+            </a>
+            <a href="#" className="hover:text-white">
+              <FaLinkedin size={20} />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Footer */}
+      <div className="border-t border-gray-700 py-4 text-center text-gray-400 text-xs">
+        © {new Date().getFullYear()} Graamvaani. {t("footer.rightsReserved")}
+      </div>
+    </footer>
+  );
 };
 
 export default Footer;

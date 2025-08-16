@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<link
-			rel="icon"
-			type="image/svg+xml"
-			href="/vite.svg" />
-		<meta
-			name="viewport"
-			content="width=device-width, initial-scale=1.0" />
-		<title>Vite + React</title>
-	</head>
-	<body>
-		<script
-			src="https://cdn.botpress.cloud/webchat/v3.2/inject.js"
-			defer></script>
-		<script
-			src="https://files.bpcontent.cloud/2025/07/26/14/20250726145316-HL7LMT4C.js"
-			defer></script>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite + React</title>
+  <style>
+    elevenlabs-convai {
+      position: fixed !important;
+      bottom: 10px !important;
+      left: 250px !important;
+      right: auto !important;
+    
+    }
+  </style>
+</head>
+<body>
 
-		<div id="root"></div>
-		<script
-			type="module"
-			src="/src/main.jsx"></script>
-	</body>
+  <script src="https://cdn.botpress.cloud/webchat/v3.2/inject.js" defer></script>
+  <script src="https://files.bpcontent.cloud/2025/07/26/14/20250726145316-HL7LMT4C.js" defer></script>
+
+  <!-- Left-aligned ElevenLabs widget -->
+  <elevenlabs-convai agent-id="agent_0701k1rfj5mned0b1vv6hbymx207"></elevenlabs-convai>
+  <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+  
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>
