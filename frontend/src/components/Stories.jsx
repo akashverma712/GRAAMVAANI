@@ -132,7 +132,7 @@ const Stories = () => {
             {/* Close Button */}
             <button
               onClick={() => setSelected(null)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"
+              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl cursor-pointer m-4"
             >
               &times;
             </button>

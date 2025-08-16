@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaUserCircle, FaFilePdf, FaPhotoVideo, FaFileUpload } from 'react-icons/fa';
 import { MdPostAdd } from 'react-icons/md';
+import ForumSection from './ForumSection';
 
 const CommunityForum = () => {
   const [posts, setPosts] = useState([]);
@@ -134,6 +135,7 @@ const CommunityForum = () => {
           )}
         </div>
       ))}
+      <ForumSection/>
     </section>
   );
 };

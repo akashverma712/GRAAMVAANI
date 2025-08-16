@@ -10,6 +10,8 @@ import NoticeDetail from './components/NoticeDetail';
 // import Scheme from './components/Scheme';
 import EventCalendar from './components/EventCalendar';
 import CommunityForum from './components/CommunityForum.jsx';
+import LearningResources from './components/LearningResources.jsx';
+import PanchayatNoticeBoard from './components/PanchayatNoticeBoard.jsx';
 
 const App = () => {
 	return (
@@ -24,7 +26,7 @@ const App = () => {
 					path="notice"
 					element={
 						<ProtectedRoute>
-							<NoticeDetail />
+							<PanchayatNoticeBoard/>
 						</ProtectedRoute>
 					}
 				/>
@@ -42,6 +44,12 @@ const App = () => {
 						<ProtectedRoute>
 							<EventCalendar />
 						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/resources"
+					element={
+							<LearningResources />
 					}
 				/>
 			</Route>

@@ -6,6 +6,8 @@ import CATsection from '../components/CATsection';
 import LearningResources from '../components/LearningResources';
 import Stories from '../components/Stories';
 import LocalMap from '../components/LocalMap';
+import AIRecommendations from '../components/AIRecommendations';
+import PanchayatNoticeBoard from '../components/PanchayatNoticeBoard';
 
 const Home = () => {
 	return (
@@ -13,9 +15,10 @@ const Home = () => {
 			<Hero />
 			<Notices />
       {/* <LocalMap/> */}
-			<LearningResources />
 			<Stories />
+			<AIRecommendations/>
 			<AboutSection />
+			{/* <PanchayatNoticeBoard/> */}
 			<Features />
 			{/* <CATsection /> */}
 		</>
