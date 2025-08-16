@@ -1,123 +1,129 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { FaFilePdf, FaVideo, FaHeadphones } from 'react-icons/fa';
+import React from "react";
+import { motion } from "framer-motion";
+import { FaHeadphones, FaVideo, FaFilePdf } from "react-icons/fa";
+import AudioPlayer from "./AudioPlayer";
 
-import Spotifycard from './Spotifycard';
-
-const categorizedResources = {
-	video: [
-		{
-			title: 'Organic Farming Basics',
-			url: 'https://youtu.be/GLtHdwGwQ34',
-		},
-		{
-			title: 'Crop Rotation Techniques',
-			url: 'https://www.youtube.com/embed/UxszL_l3Q2M',
-		},
-	],
-	audio: [
-		{
-			title: 'Soil Health Podcast',
-			url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-		},
-		{
-			title: 'Rainwater Harvesting Guide',
-			url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-		},
-	],
-	pdf: [
-		{
-			title: 'Farmer Training Manual',
-			url: 'https://example.com/farmer-training-manual.pdf',
-		},
-		{
-			title: 'Government Scheme Handbook',
-			url: 'https://example.com/govt-scheme-handbook.pdf',
-		},
-		{
-			title: 'Organic Fertilizer Guide',
-			url: 'https://example.com/organic-fertilizer-guide.pdf',
-		},
-	],
+const resources = {
+  audio: [
+   {
+    id: 1,
+    title: "Health Awareness - Nutrition",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+  },
+  {
+    id: 2,
+    title: "Education - Digital Learning",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+  },
+  {
+    id: 3,
+    title: "Agriculture Guidance",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
+  },
+  {
+    id: 4,
+    title: "Government Schemes Info",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"
+  },
+  {
+    id: 5,
+    title: "Women Empowerment Story",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"
+  },
+  {
+    id: 6,
+    title: "Skill Development Training",
+    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"
+  },
+  ],
+  video: [
+    { category: "Education", title: "Basic computer learning", url: "https://www.youtube.com/embed/6mbwJ2xhgzM" },
+    { category: "Agriculture", title: "Modern irrigation techniques", url: "https://www.youtube.com/embed/UxszL_l3Q2M" },
+  ],
+  pdf: [
+    { category: "Health", title: "Health & Safety Guide", url: "https://example.com/health-guide.pdf" },
+    { category: "Education", title: "Education Policy", url: "https://example.com/education-policy.pdf" },
+    { category: "Agriculture", title: "Farming Best Practices", url: "https://example.com/farming-guide.pdf" },
+    { category: "Schemes", title: "Govt Schemes Info", url: "https://example.com/govt-schemes.pdf" },
+  ],
 };
 
-const LearningResources = () => {
+const ResourceSection = () => {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-12 grid gap-8 md:grid-cols-3">
+		{/* Video Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="bg-blue-50 p-6 rounded-xl shadow-lg"
+      >
+        <h3 className="text-xl font-bold text-blue-800 flex items-center gap-2 mb-4">
+          <FaVideo /> Helpful Videos
+        </h3>
+        {resources.video.map((v, i) => (
+          <div key={i} className="mb-6">
+            <h4 className="font-semibold text-gray-800">{v.category}</h4>
+            <p className="text-sm text-gray-600">{v.title}</p>
+            <iframe
+              src={v.url}
+              title={v.title}
+              className="w-full aspect-video rounded mt-2"
+              allowFullScreen
+            />
+          </div>
+        ))}
+      </motion.div>
+      {/* Audio Section */}
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="bg-green-50 p-6 rounded-xl shadow-lg"
+      >
+        <h3 className="text-xl font-bold text-green-800 flex items-center gap-2 mb-4">
+          <FaHeadphones /> Useful Audios
+        </h3>
+        {resources.audio.map((a, i) => (
+          <div key={i} className="mb-6">
+            <h4 className="font-semibold text-gray-800">{a.category}</h4>
+            <p className="text-sm text-gray-600">{a.title}</p>
+            <audio controls className="w-full mt-2">
+              <source src={a.url} type="audio/mpeg" />
+            </audio>
+          </div>
+        ))}
+		  <AudioPlayer/>
+      </motion.div>
 
 
-	return (
-		<motion.section
-			initial={{ opacity: 0, y: 30 }}
-			animate={{ opacity: 1, y: 0 }}
-			transition={{ duration: 0.6 }}
-			className="max-w-6xl mx-auto px-4 py-6 mt-6 bg-white shadow-lg rounded-xl overflow-hidden border border-green-100 transition-al">
-			<h2 className="text-3xl font-bold text-green-700 mb-8 flex items-center gap-2 ">📚 Resources</h2>
 
-			{categorizedResources.video.length > 0 && (
-				<div className="mb-10 ">
-					<h3 className="text-2xl font-semibold text-green-800 mb-4 flex items-center gap-2">
-						<FaVideo /> Videos
-					</h3>
-					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-						{categorizedResources.video.map((video, index) => (
-							<motion.div
-								key={index}
-								whileHover={{ scale: 1.02 }}
-								className="bg-white shadow-md rounded-lg p-4 border border-green-200">
-								<h4 className="text-lg font-semibold mb-2">{video.title}</h4>
-								<iframe
-									src={video.url}
-									title={video.title}
-									className="w-full aspect-video rounded"
-									allowFullScreen></iframe>
-							</motion.div>
-						))}
-					</div>
-				</div>
-			)}
-
-			{categorizedResources.audio.length > 0 && (
-				<div className="mb-10">
-					<h3 className="text-2xl font-semibold text-green-800 mb-4 flex items-center gap-2">
-						<FaHeadphones /> Audio
-					</h3>
-
-					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-						{categorizedResources.audio.map((audio, index) => (
-							<Spotifycard
-								key={index}
-								audio={audio}
-							/>
-						))}
-					</div>
-				</div>
-			)}
-
-			{categorizedResources.pdf.length > 0 && (
-				<div>
-					<h3 className="text-2xl font-semibold text-green-800 mb-4 flex items-center gap-2">
-						<FaFilePdf /> PDF Downloads
-					</h3>
-					<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-						{categorizedResources.pdf.map((pdf, index) => (
-							<motion.div
-								key={index}
-								whileHover={{ scale: 1.02 }}
-								className="bg-white shadow-md rounded-lg p-4 border border-green-200">
-								<h4 className="text-lg font-semibold mb-2">{pdf.title}</h4>
-								<a
-									href={pdf.url}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="text-green-600 underline font-medium">
-									Download PDF
-								</a>
-							</motion.div>
-						))}
-					</div>
-				</div>
-			)}
-		</motion.section>
-	);
+      {/* PDF Section */}
+      <motion.div
+        initial={{ opacity: 0, x: 50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="bg-red-50 p-6 rounded-xl shadow-lg"
+      >
+        <h3 className="text-xl font-bold text-red-800 flex items-center gap-2 mb-4">
+          <FaFilePdf />  PDFs
+        </h3>
+        {resources.pdf.map((p, i) => (
+          <div key={i} className="mb-4">
+            <h4 className="font-semibold text-gray-800">{p.category}</h4>
+            <a
+              href={p.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-red-600 hover:underline"
+            >
+              {p.title}
+            </a>
+          </div>
+        ))}
+      </motion.div>
+    </section>
+  );
 };
 
-export default LearningResources;
+export default ResourceSection;

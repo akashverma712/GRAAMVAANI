@@ -26,7 +26,6 @@ const recommendationsData = [
 const AIRecommendations = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Auto-change recommendation every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>

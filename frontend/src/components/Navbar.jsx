@@ -17,7 +17,7 @@ import {
   FaSignInAlt,
   FaBars,
   FaTimes,
-  FaBook, // 📘 Added for resources
+  FaBook, 
 } from 'react-icons/fa';
 
 const Navbar = () => {
@@ -69,7 +69,7 @@ const Navbar = () => {
             to="/resources"
             active={isActive('/resources')}
             icon={<FaBook />}
-            label={t('navbar.resources') || 'Resources'} // fallback if not translated
+            label={t ('Resources')}
           />
         </nav>
 

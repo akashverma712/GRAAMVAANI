@@ -39,7 +39,6 @@ const CommunityForum = () => {
     <section className="max-w-3xl mx-auto py-10 px-4">
       <h2 className="text-3xl font-bold mb-6 text-center text-green-700">Community Forum</h2>
 
-      {/* Create Post */}
       <div className="bg-white p-4 rounded-xl shadow mb-8">
         <div className="flex items-center gap-2 mb-3 text-green-700 font-semibold">
           <FaUserCircle size={26} />
@@ -60,7 +59,6 @@ const CommunityForum = () => {
           onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
         />
 
-        {/* Upload buttons */}
         <div className="flex gap-4 mb-4">
           <label className="flex items-center gap-1 cursor-pointer text-green-700">
             <FaPhotoVideo />
@@ -107,7 +105,6 @@ const CommunityForum = () => {
         </button>
       </div>
 
-      {/* Posts List */}
       {posts.map((post) => (
         <div key={post.id} className="bg-white p-4 rounded-xl shadow mb-6">
           <div className="flex items-center gap-2 text-green-700 mb-1 font-medium">

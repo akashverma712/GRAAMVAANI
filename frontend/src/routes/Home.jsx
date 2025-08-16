@@ -8,6 +8,7 @@ import Stories from '../components/Stories';
 import LocalMap from '../components/LocalMap';
 import AIRecommendations from '../components/AIRecommendations';
 import PanchayatNoticeBoard from '../components/PanchayatNoticeBoard';
+import HelpSupport from '../components/HelpSupport ';
 
 const Home = () => {
 	return (
@@ -17,6 +18,7 @@ const Home = () => {
       {/* <LocalMap/> */}
 			<Stories />
 			<AIRecommendations/>
+			<HelpSupport/>
 			<AboutSection />
 			{/* <PanchayatNoticeBoard/> */}
 			<Features />
