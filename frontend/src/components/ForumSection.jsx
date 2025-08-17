@@ -46,7 +46,7 @@ const ForumSection = () => {
   return (
     <section id="forum" className="py-20 bg-white">
       <div className="max-w-6xl mx-auto px-6">
-        
+
 
         {/* Search Bar */}
         <div className="flex items-center max-w-xl mx-auto bg-gray-100 rounded-full px-4 py-2 mb-10 shadow-md">
