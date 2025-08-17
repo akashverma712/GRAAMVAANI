@@ -17,7 +17,7 @@ import {
   FaSignInAlt,
   FaBars,
   FaTimes,
-  FaBook, 
+  FaBook,
 } from 'react-icons/fa';
 
 const Navbar = () => {
@@ -70,6 +70,12 @@ const Navbar = () => {
             active={isActive('/resources')}
             icon={<FaBook />}
             label={t ('Resources')}
+          />
+          <NavItem
+            to="/additional-info"
+            active={isActive('/additional-info')}
+            icon={<FaBook />}
+            label={t ('additional')}
           />
         </nav>
 
@@ -130,6 +136,13 @@ const Navbar = () => {
               active={isActive('/resources')}
               icon={<FaBook />}
               label={t('navbar.resources') || 'Resources'}
+              mobile
+            />
+            <NavItem
+              to="/additional-info"
+              active={isActive('/additional-info')}
+              icon={<FaBook />}
+              label={t('navbar.additional-info') || 'additional-info'}
               mobile
             />
             <SignedOut>
