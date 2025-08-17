@@ -67,6 +67,70 @@
   "story3": {
     "title": "Digital Literacy Advocate",
     "description": "Started a free computer class for kids and adults in the village using old laptops."
-  }
+  },
+  
+    "recommendations": {
+      "title": "AI Recommendations",
+      "subtitle": "Smart suggestions tailored for farmers, powered by AI insights.",
+      "crop": {
+        "title": "Crop Recommendation",
+        "suggestion": "Based on current soil data, growing Millets will yield 25% more profit this season."
+      },
+      "irrigation": {
+        "title": "AI Irrigation Tip",
+        "suggestion": "Automated irrigation at 5 AM and 6 PM saves up to 18% water usage."
+      },
+      "fertilizer": {
+        "title": "Fertilizer Optimization",
+        "suggestion": "Using organic compost reduces costs by 20% and improves soil quality long-term."
+      }
+    },
+ 
+      "help": {
+        "title": "Help & Support",
+        "health": {
+          "category": "Health",
+          "description": "For medical emergencies, vaccination, and health guidance."
+        },
+        "education": {
+          "category": "Education",
+          "description": "For school enrolment, scholarship, and literacy programs."
+        },
+        "agriculture": {
+          "category": "Agriculture",
+          "description": "For crop guidance, loans, and farmer schemes."
+        },
+        "emergency": {
+          "category": "Emergency",
+          "description": "Fire, flood, accident, or any urgent issue."
+      }
+    },
+    
+      "successWall": {
+        "title": "Success Story Wall",
+        "subtitle": "Stories of empowerment, innovation, and impact across rural communities.",
+        "stories": {
+          "farmers": {
+            "title": "Empowering Farmers",
+            "description": "Over 5,000 farmers have improved crop yields using our AI-powered guidance.",
+            "location": "Maharashtra, India"
+          },
+          "women": {
+            "title": "Women Entrepreneurs",
+            "description": "Our microloan program has helped 1,200 women start small businesses.",
+            "location": "Tamil Nadu, India"
+          },
+          "global": {
+            "title": "Global Recognition",
+            "description": "Recognized by UNDP for sustainable rural development initiatives.",
+            "location": "Global"
+          }
+        }
+      }
+    
+    
+    
+  
+  
 
 }

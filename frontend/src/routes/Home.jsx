@@ -1,6 +1,6 @@
 import Hero from '../components/Hero';
 import Features from '../components/Features';
-import Notices from '../components/Notices';
+// import Notices from '../components/Notices';
 import AboutSection from '../components/AboutSection';
 import CATsection from '../components/CATsection';
 import LearningResources from '../components/LearningResources';
@@ -14,7 +14,7 @@ const Home = () => {
 	return (
 		<>
 			<Hero />
-			<Notices />
+			{/* <Notices /> */}
       {/* <LocalMap/> */}
 			<Stories />
 			<AIRecommendations/>

@@ -1,13 +1,14 @@
 // App.jsx
 import { Routes, Route } from "react-router-dom";
 
-import NoticeUpload from "./pages/NoticeUpload";
+// import NoticeUpload from "./pages/NoticeUpload";
 import SignInPage from "./components/SignInPage";
 import DashboardLayout from "./components/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import EventForm from "./pages/EventForm";
 import SchemeForm from "./pages/SchemeForm";
+import AdminEventUpload from "./pages/AdminEventUpload";
 
 function App() {
   return (
@@ -17,7 +18,9 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/notices" element={<NoticeUpload />} />
+          {/* <Route path="/notices" element={<NoticeUpload />} /> */}
+                    <Route path="/event" element={<AdminEventUpload />} />
+
           <Route path="/event" element={<EventForm />} />
           <Route path="/scheme" element={<SchemeForm />} />
         </Route>

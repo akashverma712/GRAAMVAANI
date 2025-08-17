@@ -29,25 +29,8 @@ const PanchayatNoticeBoard = () => {
             pdfUrl: "/pdfs/water-contamination.pdf",
             imageUrl: "/images/water-safety.jpg",
             audioUrl: "/audio/water-alert.mp3",
-          },
-          {
-            id: 2,
-            title: "Farmer Training Workshop",
-            date: "2025-08-20",
-            category: "Agriculture",
-            priority: "Medium",
-            description:
-              "Learn organic farming techniques at Gram Panchayat Hall.",
-            pdfUrl: "/pdfs/farmer-workshop.pdf",
-          },
-          {
-            id: 3,
-            title: "Monthly Health Checkup Camp",
-            date: "2025-08-18",
-            category: "Health",
-            priority: "Low",
-            description: "Free checkups at the village health center.",
-          },
+          }
+         
         ];
   });
 

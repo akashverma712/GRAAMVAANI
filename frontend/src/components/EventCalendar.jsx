@@ -10,28 +10,8 @@ const eventsData = [
 		date: '2025-07-25',
 		description: 'Monthly Gram Sabha for discussing local development issues.',
 		category: 'Community',
-	},
-	{
-		id: 2,
-		title: 'Health Checkup Camp',
-		date: '2025-07-26',
-		description: 'Free health checkup camp organized by district hospital.',
-		category: 'Health',
-	},
-	{
-		id: 3,
-		title: 'Farmer Training Workshop',
-		date: '2025-08-01',
-		description: 'Workshop on organic farming practices.',
-		category: 'Agriculture',
-	},
-	{
-		id: 4,
-		title: 'Water Management Meeting',
-		date: '2025-08-01',
-		description: 'Discussion on village water management strategies.',
-		category: 'Environment',
-	},
+	}
+	
 ];
 
 const categories = ['All', ...new Set(eventsData.map((e) => e.category))];

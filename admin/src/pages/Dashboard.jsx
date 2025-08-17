@@ -6,11 +6,15 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Function to generate a random LGD number
+  const getRandomLGD = () => Math.floor(100000 + Math.random() * 900000);
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        // Directly fetch Dhanbad users from backend
-        const res = await axios.get("http://localhost:5000/api/admin/krishna/users/Dhanbad");
+        const res = await axios.get(
+          "http://localhost:5000/api/admin/krishna/users/Dhanbad"
+        );
         setUsers(res.data);
       } catch (err) {
         console.error("Error fetching users:", err.message);
@@ -23,40 +27,71 @@ const Dashboard = () => {
     fetchUsers();
   }, []);
 
-  if (loading) return <p>Loading users...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading)
+    return (
+      <p className="text-center text-lg text-gray-500 mt-10">Loading users...</p>
+    );
+  if (error)
+    return (
+      <p className="text-center text-red-500 font-semibold mt-10">{error}</p>
+    );
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">Dhanbad District Users</h1>
+    <div className="p-6 max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
+        Dhanbad District Users
+      </h1>
 
       {users.length === 0 ? (
-        <p>No users found for Dhanbad</p>
+        <p className="text-center text-gray-600 font-medium">
+          No users found for Dhanbad
+        </p>
       ) : (
-        <table className="table-auto w-full border border-gray-300">
-          <thead>
-            <tr className="bg-gray-200">
-              <th className="border px-4 py-2">Name</th>
-              <th className="border px-4 py-2">Email</th>
-              <th className="border px-4 py-2">Phone</th>
-              <th className="border px-4 py-2">Panchayat</th>
-              <th className="border px-4 py-2">Pincode</th>
-              <th className="border px-4 py-2">State</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user._id}>
-                <td className="border px-4 py-2">{user.name}</td>
-                <td className="border px-4 py-2">{user.email}</td>
-                <td className="border px-4 py-2">{user.phone}</td>
-                <td className="border px-4 py-2">{user.panchayat}</td>
-                <td className="border px-4 py-2">{user.pincode}</td>
-                <td className="border px-4 py-2">{user.state}</td>
+        <div className="overflow-x-auto shadow-lg rounded-lg">
+          <table className="min-w-full border border-gray-200">
+            <thead className="bg-blue-100">
+              <tr>
+                <th className="border px-6 py-3 text-left text-gray-700 font-semibold">
+                  Name
+                </th>
+                <th className="border px-6 py-3 text-left text-gray-700 font-semibold">
+                  Email
+                </th>
+                <th className="border px-6 py-3 text-left text-gray-700 font-semibold">
+                  Phone
+                </th>
+                <th className="border px-6 py-3 text-left text-gray-700 font-semibold">
+                  Panchayat
+                </th>
+                <th className="border px-6 py-3 text-left text-gray-700 font-semibold">
+                  LGD Number
+                </th>
+                <th className="border px-6 py-3 text-left text-gray-700 font-semibold">
+                  Pincode
+                </th>
+                <th className="border px-6 py-3 text-left text-gray-700 font-semibold">
+                  State
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr
+                  key={user._id}
+                  className="hover:bg-blue-50 transition-colors duration-200"
+                >
+                  <td className="border px-6 py-3">{user.name}</td>
+                  <td className="border px-6 py-3">{user.email}</td>
+                  <td className="border px-6 py-3">{user.phone}</td>
+                  <td className="border px-6 py-3">{user.panchayat}</td>
+                  <td className="border px-6 py-3">{getRandomLGD()}</td>
+                  <td className="border px-6 py-3">{user.pincode}</td>
+                  <td className="border px-6 py-3">{user.state}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

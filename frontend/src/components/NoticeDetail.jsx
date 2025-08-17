@@ -10,23 +10,7 @@ const dummyNotices = [
 		category: 'Health',
 		description: 'Discussion on safe drinking water initiatives and waterborne disease prevention.',
 		pdfUrl: '/pdfs/clean-water-meeting.pdf',
-	},
-	{
-		id: 2,
-		title: 'Government Scheme Awareness Drive',
-		date: '2025-07-25',
-		category: 'Education',
-		description: 'Details about the schemes for youth and women development.',
-		pdfUrl: '/pdfs/scheme-awareness.pdf',
-	},
-	{
-		id: 3,
-		title: 'Farmer Loan Waiver Update',
-		date: '2025-07-20',
-		category: 'Agriculture',
-		description: 'Updates on farmer loan waiver applications.',
-		pdfUrl: '/pdfs/loan-waiver.pdf',
-	},
+	}
 ];
 
 const categories = ['All', 'Health', 'Education', 'Agriculture'];

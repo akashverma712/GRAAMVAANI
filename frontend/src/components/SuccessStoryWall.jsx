@@ -3,30 +3,27 @@ import { useTranslation } from "react-i18next";
 import { FaUserCheck, FaAward, FaGlobeAsia } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-const stories = [
+const storiesData = [
   {
     id: 1,
     icon: <FaUserCheck className="text-green-500 text-4xl" />,
-    title: "Empowering Farmers",
-    description:
-      "Over 5,000 farmers have improved crop yields using our AI-powered guidance.",
-    location: "Maharashtra, India",
+    titleKey: "successWall.stories.farmers.title",
+    descriptionKey: "successWall.stories.farmers.description",
+    locationKey: "successWall.stories.farmers.location",
   },
   {
     id: 2,
     icon: <FaAward className="text-yellow-500 text-4xl" />,
-    title: "Women Entrepreneurs",
-    description:
-      "Our microloan program has helped 1,200 women start small businesses.",
-    location: "Tamil Nadu, India",
+    titleKey: "successWall.stories.women.title",
+    descriptionKey: "successWall.stories.women.description",
+    locationKey: "successWall.stories.women.location",
   },
   {
     id: 3,
     icon: <FaGlobeAsia className="text-blue-500 text-4xl" />,
-    title: "Global Recognition",
-    description:
-      "Recognized by UNDP for sustainable rural development initiatives.",
-    location: "Global",
+    titleKey: "successWall.stories.global.title",
+    descriptionKey: "successWall.stories.global.description",
+    locationKey: "successWall.stories.global.location",
   },
 ];
 
@@ -44,7 +41,7 @@ const SuccessStoryWall = () => {
         </p>
 
         <div className="grid gap-8 md:grid-cols-3">
-          {stories.map((story) => (
+          {storiesData.map((story) => (
             <motion.div
               key={story.id}
               className="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition duration-300 text-left"
@@ -53,12 +50,12 @@ const SuccessStoryWall = () => {
               <div className="flex items-center gap-4 mb-4">
                 {story.icon}
                 <h3 className="text-xl font-semibold text-gray-800">
-                  {story.title}
+                  {t(story.titleKey)}
                 </h3>
               </div>
-              <p className="text-gray-600">{story.description}</p>
+              <p className="text-gray-600">{t(story.descriptionKey)}</p>
               <p className="mt-3 text-sm text-gray-500 italic">
-                📍 {story.location}
+                📍 {t(story.locationKey)}
               </p>
             </motion.div>
           ))}

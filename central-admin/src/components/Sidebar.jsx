@@ -13,7 +13,6 @@ const Sidebar = () => {
           <SidebarItem icon={<FaHome />} label="Dashboard" to="/dashboard" />
           {/* <SidebarItem icon={<FaUsers />} label="Event" to="/event" /> */}
           <SidebarItem icon={<FaChartLine />} label="Notices" to="/notices" />
-          <SidebarItem icon={<FaCog />} label="Scheme" to="/event" />
           <SidebarItem icon={<FaSms />} label="Send SMS" to="/send-sms" /> {/* ✅ Added Send SMS link */}
         </nav>
       </div>
