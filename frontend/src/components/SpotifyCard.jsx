@@ -8,7 +8,6 @@ const Spotifycard = () => {
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [progress, setProgress] = useState(0);
 
-	// Dummy audio data
 	const audio = {
 		title: 'Chill Vibes',
 		artist: 'LoFi Beats',
@@ -17,7 +16,6 @@ const Spotifycard = () => {
 		cover: 'https://thumbs.dreamstime.com/z/small-rural-village-rainwater-harvesting-systems-sustainable-water-supply-concept-environmental-conservation-315939754.jpg'
 	};
 
-	// Toggle Play/Pause
 	const togglePlay = () => {
 		if (isPlaying) {
 			audioRef.current.pause();
@@ -27,7 +25,6 @@ const Spotifycard = () => {
 		setIsPlaying(!isPlaying);
 	};
 
-	// Update progress bar
 	const handleTimeUpdate = () => {
 		const current = audioRef.current.currentTime;
 		const duration = audioRef.current.duration;
@@ -39,14 +36,12 @@ const Spotifycard = () => {
 			whileHover={{ scale: 1.02 }}
 			className="bg-white shadow-lg rounded-xl overflow-hidden border border-green-200 flex flex-col">
 
-			{/* Cover Image */}
 			<div className="w-full h-48 bg-green-100 flex items-center justify-center overflow-hidden relative">
 				<img
 					src={audio.cover}
 					alt={audio.title}
 					className="w-full h-full object-cover"
 				/>
-				{/* Play button overlay */}
 				<button
 					onClick={togglePlay}
 					className="absolute bottom-4 right-4 bg-green-600 text-white rounded-full p-3 shadow-lg hover:bg-green-700 transition">
@@ -54,14 +49,12 @@ const Spotifycard = () => {
 				</button>
 			</div>
 
-			{/* Details */}
 			<div className="p-4 flex-1">
 				<h4 className="text-lg font-semibold text-green-800">{audio.title}</h4>
 				{audio.artist && <p className="text-sm text-gray-600">{audio.artist}</p>}
 				{audio.description && <p className="text-xs text-gray-500 mt-1">{audio.description}</p>}
 			</div>
 
-			{/* Progress Bar */}
 			<div className="px-4 pb-4">
 				<div className="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
 					<div
@@ -70,7 +63,6 @@ const Spotifycard = () => {
 				</div>
 			</div>
 
-			{/* Hidden Audio Element */}
 			<audio
 				ref={audioRef}
 				src={audio.url}

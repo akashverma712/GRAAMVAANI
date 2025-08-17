@@ -6,11 +6,14 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import VerifyEmail from './pages/VerifyEmail';
 import ProtectedRoute from './routes/ProtectedRoute';
-import NoticeDetail from './components/NoticeDetail';
+// import NoticeDetail from './components/NoticeDetail';
 import EventCalendar from './components/EventCalendar';
-import CommunityForum from './components/CommunityForum';
+// import CommunityForum from './components/CommunityForum';
 import AdditionalInfo from './components/AdditionalInfo';
 import LocationFetcher from './components/LocationFetcher'; 
+import CommunityForum from './components/CommunityForum.jsx';
+import LearningResources from './components/LearningResources.jsx';
+import PanchayatNoticeBoard from './components/PanchayatNoticeBoard.jsx';
 
 const App = () => {
 	return (
@@ -31,7 +34,7 @@ const App = () => {
 					path="notice"
 					element={
 						<ProtectedRoute>
-							<NoticeDetail />
+							<PanchayatNoticeBoard/>
 						</ProtectedRoute>
 					}
 				/>
@@ -59,7 +62,14 @@ const App = () => {
 						</ProtectedRoute>
 					}
 				/>
+			
+			<Route path="/resources"
+			element={
+					<LearningResources />
+			}/>
 			</Route>
+				
+		
 
 			{/* Auth Pages */}
 			<Route path="signup" element={<Signup />} />
