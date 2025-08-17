@@ -29,22 +29,22 @@ const Footer = () => {
           <ul className="space-y-2">
             <li>
               <a href="/" className="hover:text-white transition-colors">
-                {t("footer.home")}
+                {t("Home")}
               </a>
             </li>
             <li>
               <a href="/about" className="hover:text-white transition-colors">
-                {t("footer.about")}
+                {t("About")}
               </a>
             </li>
             <li>
               <a href="/services" className="hover:text-white transition-colors">
-                {t("footer.services")}
+                {t("Services")}
               </a>
             </li>
             <li>
               <a href="/contact" className="hover:text-white transition-colors">
-                {t("footer.contact")}
+                {t("Contact")}
               </a>
             </li>
           </ul>

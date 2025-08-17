@@ -1,27 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const Dashboard = () => {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        // Directly fetch Dhanbad users from backend
+        const res = await axios.get("http://localhost:5000/api/admin/krishna/users/Dhanbad");
+        setUsers(res.data);
+      } catch (err) {
+        console.error("Error fetching users:", err.message);
+        setError("Failed to fetch users");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  if (loading) return <p>Loading users...</p>;
+  if (error) return <p>{error}</p>;
+
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-bold text-green-700 mb-4">Admin Dashboard</h1>
-      <p className="text-gray-700 text-lg">
-        Welcome back! Use the sidebar to navigate through different sections.
-      </p>
+      <h1 className="text-xl font-bold mb-4">Dhanbad District Users</h1>
 
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <StatCard title="Users" value="1,245" />
-        <StatCard title="Notices" value="34" />
-        <StatCard title="Site Visits" value="12,857" />
-      </div>
+      {users.length === 0 ? (
+        <p>No users found for Dhanbad</p>
+      ) : (
+        <table className="table-auto w-full border border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border px-4 py-2">Name</th>
+              <th className="border px-4 py-2">Email</th>
+              <th className="border px-4 py-2">Phone</th>
+              <th className="border px-4 py-2">Panchayat</th>
+              <th className="border px-4 py-2">Pincode</th>
+              <th className="border px-4 py-2">State</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user._id}>
+                <td className="border px-4 py-2">{user.name}</td>
+                <td className="border px-4 py-2">{user.email}</td>
+                <td className="border px-4 py-2">{user.phone}</td>
+                <td className="border px-4 py-2">{user.panchayat}</td>
+                <td className="border px-4 py-2">{user.pincode}</td>
+                <td className="border px-4 py-2">{user.state}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };
-
-const StatCard = ({ title, value }) => (
-  <div className="bg-white p-4 rounded-2xl shadow hover:shadow-md transition duration-200">
-    <h2 className="text-gray-600 text-sm">{title}</h2>
-    <p className="text-2xl font-semibold text-green-700">{value}</p>
-  </div>
-);
 
 export default Dashboard;
