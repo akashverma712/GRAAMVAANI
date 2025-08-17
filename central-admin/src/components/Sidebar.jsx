@@ -11,9 +11,9 @@ const Sidebar = () => {
         <div className="p-4 text-green-700 font-bold text-xl">AdminPanel</div>
         <nav className="flex flex-col gap-2 p-4 text-gray-700">
           <SidebarItem icon={<FaHome />} label="Dashboard" to="/dashboard" />
-          <SidebarItem icon={<FaUsers />} label="Event" to="/event" />
+          {/* <SidebarItem icon={<FaUsers />} label="Event" to="/event" /> */}
           <SidebarItem icon={<FaChartLine />} label="Notices" to="/notices" />
-          <SidebarItem icon={<FaCog />} label="Scheme" to="/Scheme" />
+          <SidebarItem icon={<FaCog />} label="Scheme" to="/event" />
           <SidebarItem icon={<FaSms />} label="Send SMS" to="/send-sms" /> {/* ✅ Added Send SMS link */}
         </nav>
       </div>

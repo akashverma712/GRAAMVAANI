@@ -1,53 +1,84 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaFilePdf, FaPhotoVideo, FaHeadphones, FaExclamationCircle, FaCalendarAlt, FaCheckCircle, FaComment
+  FaFilePdf,
+  FaPhotoVideo,
+  FaHeadphones,
+  FaExclamationCircle,
+  FaCalendarAlt,
+  FaCheckCircle,
 } from "react-icons/fa";
-
-// Sample Notices
-const dummyNotices = [
-  {
-    id: 1,
-    title: "Water Contamination Alert",
-    date: "2025-08-16",
-    category: "Emergency",
-    priority: "High",
-    description: "Avoid using well water for drinking. Health authorities investigating.",
-    pdfUrl: "/pdfs/water-contamination.pdf",
-    imageUrl: "/images/water-safety.jpg",
-    audioUrl: "/audio/water-alert.mp3",
-  },
-  {
-    id: 2,
-    title: "Farmer Training Workshop",
-    date: "2025-08-20",
-    category: "Agriculture",
-    priority: "Medium",
-    description: "Learn organic farming techniques at Gram Panchayat Hall.",
-    pdfUrl: "/pdfs/farmer-workshop.pdf",
-  },
-  {
-    id: 3,
-    title: "Monthly Health Checkup Camp",
-    date: "2025-08-18",
-    category: "Health",
-    priority: "Low",
-    description: "Free checkups at the village health center.",
-  },
-];
 
 const categories = ["All", "Emergency", "Health", "Agriculture", "Education"];
 
 const PanchayatNoticeBoard = () => {
+  // ✅ Load from localStorage or fallback to dummy data
+  const [notices, setNotices] = useState(() => {
+    const saved = localStorage.getItem("panchayat_notices");
+    return saved
+      ? JSON.parse(saved)
+      : [
+          {
+            id: 1,
+            title: "Water Contamination Alert",
+            date: "2025-08-16",
+            category: "Emergency",
+            priority: "High",
+            description:
+              "Avoid using well water for drinking. Health authorities investigating.",
+            pdfUrl: "/pdfs/water-contamination.pdf",
+            imageUrl: "/images/water-safety.jpg",
+            audioUrl: "/audio/water-alert.mp3",
+          },
+          {
+            id: 2,
+            title: "Farmer Training Workshop",
+            date: "2025-08-20",
+            category: "Agriculture",
+            priority: "Medium",
+            description:
+              "Learn organic farming techniques at Gram Panchayat Hall.",
+            pdfUrl: "/pdfs/farmer-workshop.pdf",
+          },
+          {
+            id: 3,
+            title: "Monthly Health Checkup Camp",
+            date: "2025-08-18",
+            category: "Health",
+            priority: "Low",
+            description: "Free checkups at the village health center.",
+          },
+        ];
+  });
+
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
-  const [acknowledged, setAcknowledged] = useState([]);
-  const [feedbacks, setFeedbacks] = useState({});
+  const [acknowledged, setAcknowledged] = useState(() => {
+    const saved = localStorage.getItem("panchayat_acknowledged");
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [feedbacks, setFeedbacks] = useState(() => {
+    const saved = localStorage.getItem("panchayat_feedbacks");
+    return saved ? JSON.parse(saved) : {};
+  });
   const [popupNotice, setPopupNotice] = useState(null);
 
+  // ✅ Sync to localStorage whenever things change
+  useEffect(() => {
+    localStorage.setItem("panchayat_notices", JSON.stringify(notices));
+  }, [notices]);
+
+  useEffect(() => {
+    localStorage.setItem("panchayat_acknowledged", JSON.stringify(acknowledged));
+  }, [acknowledged]);
+
+  useEffect(() => {
+    localStorage.setItem("panchayat_feedbacks", JSON.stringify(feedbacks));
+  }, [feedbacks]);
+
   // Filtered notices
-  const filtered = dummyNotices.filter(
-    n =>
+  const filtered = notices.filter(
+    (n) =>
       (filter === "All" || n.category === filter) &&
       n.title.toLowerCase().includes(search.toLowerCase())
   );
@@ -62,7 +93,9 @@ const PanchayatNoticeBoard = () => {
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-12">
-      <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">Panchayat Notices</h2>
+      <h2 className="text-3xl font-bold text-green-700 mb-6 text-center">
+        Panchayat Notices
+      </h2>
 
       {/* Filters */}
       <div className="flex flex-wrap justify-center gap-4 mb-6">
@@ -73,7 +106,7 @@ const PanchayatNoticeBoard = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        {categories.map(cat => (
+        {categories.map((cat) => (
           <button
             key={cat}
             className={`px-4 py-2 rounded-full text-sm font-semibold border transition ${
@@ -113,18 +146,28 @@ const PanchayatNoticeBoard = () => {
               </span>
             </div>
 
-            <h3 className="text-lg font-semibold text-gray-800">{notice.title}</h3>
+            <h3 className="text-lg font-semibold text-gray-800">
+              {notice.title}
+            </h3>
             <p className="text-gray-700 mb-2">{notice.description}</p>
 
             {/* Attachments */}
             <div className="flex flex-wrap gap-4 mt-2">
               {notice.pdfUrl && (
-                <a href={notice.pdfUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-600 hover:underline">
+                <a
+                  href={notice.pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-blue-600 hover:underline"
+                >
                   <FaFilePdf /> PDF
                 </a>
               )}
               {notice.imageUrl && (
-                <a onClick={() => setPopupNotice(notice)} className="flex items-center gap-1 text-green-700 cursor-pointer hover:underline">
+                <a
+                  onClick={() => setPopupNotice(notice)}
+                  className="flex items-center gap-1 text-green-700 cursor-pointer hover:underline"
+                >
                   <FaPhotoVideo /> View Image
                 </a>
               )}
@@ -141,10 +184,15 @@ const PanchayatNoticeBoard = () => {
                 onClick={() => handleAcknowledge(notice.id)}
                 disabled={acknowledged.includes(notice.id)}
                 className={`flex items-center gap-1 px-3 py-1 rounded text-white font-semibold ${
-                  acknowledged.includes(notice.id) ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"
+                  acknowledged.includes(notice.id)
+                    ? "bg-gray-400"
+                    : "bg-green-600 hover:bg-green-700"
                 }`}
               >
-                <FaCheckCircle /> {acknowledged.includes(notice.id) ? "Acknowledged" : "Acknowledge"}
+                <FaCheckCircle />{" "}
+                {acknowledged.includes(notice.id)
+                  ? "Acknowledged"
+                  : "Acknowledge"}
               </button>
 
               <input
@@ -155,7 +203,9 @@ const PanchayatNoticeBoard = () => {
                 onChange={(e) => handleFeedback(notice.id, e.target.value)}
               />
               <button
-                onClick={() => alert(`Feedback submitted: ${feedbacks[notice.id]}`)}
+                onClick={() =>
+                  alert(`Feedback submitted: ${feedbacks[notice.id]}`)
+                }
                 className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
               >
                 Submit
@@ -180,7 +230,11 @@ const PanchayatNoticeBoard = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
             >
-              <img src={popupNotice.imageUrl} alt={popupNotice.title} className="w-full rounded" />
+              <img
+                src={popupNotice.imageUrl}
+                alt={popupNotice.title}
+                className="w-full rounded"
+              />
               <button
                 onClick={() => setPopupNotice(null)}
                 className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl"

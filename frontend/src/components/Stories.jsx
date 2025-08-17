@@ -82,7 +82,7 @@ const Stories = () => {
   return (
     <section className="py-12 px-4 max-w-6xl mx-auto">
 
-      <h2 className="text-3xl font-bold text-green-700 mb-8">{t('stories.title')}</h2>
+      {/* <h2 className="text-3xl font-bold text-green-700 mb-8">{t('stories.title')}</h2> */}
 
       <h2 className="text-3xl font-bold text-green-700 mb-8">
         Success Story Wall
