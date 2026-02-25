@@ -27,15 +27,6 @@ At its core, GRAAMVAANI empowers rural citizens with the **right information at 
 - 📂 **Project Drive:**  
   https://drive.google.com/file/d/1iLc-vgOKhGduP4fZd_ZRunUUe9FTVWyO/view?usp=sharing  
 
-- 💻 **GitHub Repository:**  
-  https://github.com/akashverma712/GRAAMVAANI
-
----
-
-## 🏆 Hackathon
-
-This project was built for the **Oscode National Level Hackathon**.
-
 ---
 
 ## 🛑 Problem Statement
@@ -135,3 +126,4 @@ Rural communities often lack **timely, reliable, and accessible information** du
 > ❤️ Made with passion to empower rural India through technology  
 >  
 > **GRAAMVAANI — where every village finds its voice.**
+
